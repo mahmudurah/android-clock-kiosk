@@ -339,6 +339,73 @@
       border-radius: 16px;
     }
 
+    /* UV Index pill (daytime only, WHO colour scale) */
+    #weather-uv {
+      display: none;
+      font-size: 6vw;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      padding: 0.6vh 1.8vw;
+      border-radius: 16px;
+      color: #111111;
+      background-color: #3ea72d;
+    }
+    body.has-uv #weather-uv { display: inline-block; }
+    #weather-uv.uv-low { background-color: #3ea72d; color: #ffffff; }
+    #weather-uv.uv-moderate { background-color: #ffd60a; color: #111111; }
+    #weather-uv.uv-high { background-color: #f18b00; color: #111111; }
+    #weather-uv.uv-veryhigh { background-color: #e53210; color: #ffffff; }
+    #weather-uv.uv-extreme { background-color: #9b4dca; color: #ffffff; }
+
+    /* Make room for the UV pill in digital mode */
+    body.mode-digital.has-uv #weather-icon { width: 6.4vw; height: 6.4vw; }
+    body.mode-digital.has-uv #weather-temp { font-size: 8vw; }
+    body.mode-digital.has-uv #weather-cond,
+    body.mode-digital.has-uv #weather-hi-lo,
+    body.mode-digital.has-uv #weather-uv { font-size: 5vw; padding-left: 1.4vw; padding-right: 1.4vw; }
+    body.mode-digital.has-uv #weather-cond { padding: 0; }
+    body.mode-digital.has-uv .weather { gap: 1.6vw; }
+
+    /* ==========================================================================
+       CLASSIC THEMES (Original v1 look, digital clock only)
+       ========================================================================== */
+    body.theme-classic-dark {
+      background-color: #050608;
+      color: #c8cfd8;
+      --sub-color: #6b7685;
+      --accent-color: #c8cfd8;
+      --divider-color: #1b2028;
+      --badge-bg: transparent;
+    }
+    body.theme-classic-light {
+      background-color: #f4f5f7;
+      color: #111418;
+      --sub-color: #525c68;
+      --accent-color: #111418;
+      --divider-color: #d8dde3;
+      --badge-bg: transparent;
+    }
+    body.theme-classic-dark #time,
+    body.theme-classic-light #time { font-size: 25vw; font-weight: 700; letter-spacing: -0.03em; }
+    body.theme-classic-dark #ampm,
+    body.theme-classic-light #ampm { font-size: 5.5vw; font-weight: 600; }
+    body.theme-classic-dark #date,
+    body.theme-classic-light #date { font-size: 6.5vw; font-weight: 500; margin-top: 2.5vh; }
+    body.theme-classic-dark .divider,
+    body.theme-classic-light .divider { width: 45vw; height: 2px; margin: 4vh 0; }
+    body.theme-classic-dark #weather-icon,
+    body.theme-classic-light #weather-icon { display: none; }
+    body.theme-classic-dark .weather,
+    body.theme-classic-light .weather { gap: 3vw; }
+    body.theme-classic-dark #weather-temp,
+    body.theme-classic-light #weather-temp { font-size: 6.5vw; font-weight: 700; }
+    body.theme-classic-dark #weather-cond,
+    body.theme-classic-light #weather-cond,
+    body.theme-classic-dark #weather-hi-lo,
+    body.theme-classic-light #weather-hi-lo { font-size: 4.8vw; font-weight: 500; padding: 0; color: var(--sub-color); }
+    body.theme-classic-dark #weather-uv,
+    body.theme-classic-light #weather-uv { font-size: 4.2vw; font-weight: 700; padding: 0.3vh 1.2vw; border-radius: 10px; }
+
     /* ==========================================================================
        SPLIT MODE (Analog + Digital Side by Side)
        ========================================================================== */
@@ -552,6 +619,7 @@
         <span id="weather-temp">--&deg;</span>
         <span id="weather-cond" class="muted">Loading...</span>
         <span id="weather-hi-lo">H --&deg; &nbsp; L --&deg;</span>
+        <span id="weather-uv">UV --</span>
       </div>
     </div>
   </div>
@@ -559,6 +627,6 @@
   <div id="toast"></div>
   <button id="mode-btn" class="corner-btn" type="button" aria-label="Switch clock mode">&#9719;</button>
   <button id="theme-btn" class="corner-btn" type="button" aria-label="Switch theme">&#9680;</button>
-  <script src="app.js?v=5"></script>
+  <script src="app.js?v=6"></script>
 </body>
 </html>

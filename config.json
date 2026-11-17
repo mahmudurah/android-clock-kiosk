@@ -1,5 +1,6 @@
 {
-  "version": "5",
+  "version": "6",
+  "showUV": true,
   "theme": "auto",
   "clockMode": "auto",
   "childName": "Maria",

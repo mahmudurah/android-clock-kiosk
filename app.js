@@ -29,7 +29,9 @@
     "terminal",
     "eink",
     "nord",
-    "red-night"
+    "red-night",
+    "classic-dark",
+    "classic-light"
   ];
 
   var THEME_LABELS = {
@@ -43,7 +45,9 @@
     "terminal": "Phosphor Terminal",
     "eink": "E-Ink Paper",
     "nord": "Nordic Frost",
-    "red-night": "Bedroom Red"
+    "red-night": "Bedroom Red",
+    "classic-dark": "Classic Digital Dark",
+    "classic-light": "Classic Digital Light"
   };
 
   var MODE_LIST = ["auto", "digital", "split", "analog"];
@@ -66,6 +70,8 @@
   var tempEl = document.getElementById("weather-temp");
   var condEl = document.getElementById("weather-cond");
   var hiLoEl = document.getElementById("weather-hi-lo");
+  var uvEl = document.getElementById("weather-uv");
+  var uvVisible = false;
   var weatherIconEl = document.getElementById("weather-icon");
   var greetingTextEl = document.getElementById("greeting-text");
   var wordTimeEl = document.getElementById("word-time");
@@ -226,6 +232,10 @@
   }
 
   function resolveClockMode(activeTheme) {
+    // Classic themes are always the original digital-only layout
+    if (activeTheme === "classic-dark" || activeTheme === "classic-light") {
+      return "digital";
+    }
     var mode = localModeOverride || cfg.clockMode || "auto";
     if (mode === "auto") {
       if (activeTheme === "maria-rainbow" || activeTheme === "maria-space" || activeTheme === "swiss" || activeTheme === "braun") {
@@ -240,7 +250,9 @@
     var activeTheme = resolveTheme(hour);
     var activeMode = resolveClockMode(activeTheme);
     var hasGreeting = updateGreeting(hour, minute, activeTheme);
-    var cls = "theme-" + activeTheme + " mode-" + activeMode + (hasGreeting ? " show-greeting" : "");
+    var cls = "theme-" + activeTheme + " mode-" + activeMode +
+      (hasGreeting ? " show-greeting" : "") +
+      (uvVisible ? " has-uv" : "");
     if (document.body.className !== cls) {
       document.body.className = cls;
     }
@@ -343,11 +355,38 @@
       '<path fill="' + c + '" d="M18 46h28a11 11 0 0 0 0-22 15 15 0 0 0-29-3A10 10 0 0 0 18 46z"/>';
   }
 
+  function uvTestValue() {
+    var m = /[?&]uvtest=(\d+(\.\d+)?)/.exec(window.location.search);
+    return m ? parseFloat(m[1]) : null;
+  }
+
+  function updateUV(cur) {
+    var test = uvTestValue();
+    var uv = test !== null ? test : cur.uv_index;
+    var isDay = test !== null ? true : (cur.is_day === 1);
+    if (cfg.showUV === false || typeof uv !== "number" || !isDay) {
+      uvVisible = false;
+    } else {
+      var v = Math.round(uv);
+      var cls;
+      if (v <= 2) cls = "uv-low";
+      else if (v <= 5) cls = "uv-moderate";
+      else if (v <= 7) cls = "uv-high";
+      else if (v <= 10) cls = "uv-veryhigh";
+      else cls = "uv-extreme";
+      uvEl.className = cls;
+      uvEl.textContent = "UV " + v;
+      uvVisible = true;
+    }
+    var now = new Date();
+    applyBodyClasses(now.getHours(), now.getMinutes());
+  }
+
   function fetchWeather() {
     var url =
       "https://api.open-meteo.com/v1/forecast?latitude=" + cfg.latitude +
       "&longitude=" + cfg.longitude +
-      "&current=temperature_2m,weather_code" +
+      "&current=temperature_2m,weather_code,uv_index,is_day" +
       "&daily=temperature_2m_max,temperature_2m_min" +
       "&timezone=" + encodeURIComponent(cfg.timezone || "auto") +
       "&forecast_days=1";
@@ -375,6 +414,7 @@
             var lo = Math.round(daily.temperature_2m_min[0]);
             hiLoEl.textContent = "H " + hi + "\u00B0  L " + lo + "\u00B0";
           }
+          updateUV(cur);
         } catch (e) {
           condEl.textContent = "Weather error";
         }
