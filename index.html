@@ -303,36 +303,39 @@
       -webkit-box-pack: center;
       -webkit-justify-content: center;
       justify-content: center;
-      -webkit-flex-wrap: wrap;
-      flex-wrap: wrap;
-      gap: 2.4vw;
+      -webkit-flex-wrap: nowrap;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+      gap: 2.2vw;
     }
 
     #weather-icon {
-      width: 8.2vw;
-      height: 8.2vw;
+      width: 7.5vw;
+      height: 7.5vw;
       display: inline-block;
       vertical-align: middle;
+      -webkit-flex-shrink: 0;
+      flex-shrink: 0;
     }
 
     #weather-temp {
-      font-size: 9.8vw;
+      font-size: 9vw;
       font-weight: 800;
       font-variant-numeric: tabular-nums;
       line-height: 1;
     }
 
     #weather-cond {
-      font-size: 6.8vw;
+      font-size: 6vw;
       font-weight: 600;
     }
 
     #weather-hi-lo {
-      font-size: 6.8vw;
+      font-size: 6vw;
       font-weight: 700;
       font-variant-numeric: tabular-nums;
       background-color: var(--badge-bg);
-      padding: 0.6vh 2vw;
+      padding: 0.6vh 1.8vw;
       border-radius: 16px;
     }
 
@@ -554,6 +557,6 @@
   <div id="toast"></div>
   <button id="mode-btn" class="corner-btn" type="button" aria-label="Switch clock mode">&#9719;</button>
   <button id="theme-btn" class="corner-btn" type="button" aria-label="Switch theme">&#9680;</button>
-  <script src="app.js?v=3"></script>
+  <script src="app.js?v=4"></script>
 </body>
 </html>

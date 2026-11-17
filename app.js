@@ -459,7 +459,6 @@
 
   themeBtn.onclick = function () { cycleTheme(1); };
   modeBtn.onclick = function () { cycleMode(); };
-  analogPaneEl.onclick = function () { cycleMode(); };
 
   var touchStartX = null;
   document.addEventListener("touchstart", function (e) {
