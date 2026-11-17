@@ -1,4 +1,4 @@
-var CACHE_NAME = "wall-clock-v2";
+var CACHE_NAME = "wall-clock-v7";
 var ASSETS = ["./", "./index.html", "./app.js"];
 
 self.addEventListener("install", function (event) {
@@ -32,7 +32,7 @@ self.addEventListener("fetch", function (event) {
     return;
   }
   event.respondWith(
-    fetch(event.request, { cache: "no-cache" })
+    fetch(event.request, { cache: "no-store" })
       .then(function (resp) {
         var copy = resp.clone();
         caches.open(CACHE_NAME).then(function (cache) {

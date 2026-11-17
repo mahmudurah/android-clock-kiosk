@@ -361,6 +361,17 @@
   }
 
   function updateUV(cur) {
+    if (!uvEl) {
+      var weatherRow = document.querySelector(".weather");
+      if (weatherRow) {
+        uvEl = document.createElement("span");
+        uvEl.id = "weather-uv";
+        weatherRow.appendChild(uvEl);
+      } else {
+        uvVisible = false;
+        return;
+      }
+    }
     var test = uvTestValue();
     var uv = test !== null ? test : cur.uv_index;
     var isDay = test !== null ? true : (cur.is_day === 1);
