@@ -32,7 +32,7 @@ self.addEventListener("fetch", function (event) {
     return;
   }
   event.respondWith(
-    fetch(event.request)
+    fetch(event.request, { cache: "no-cache" })
       .then(function (resp) {
         var copy = resp.clone();
         caches.open(CACHE_NAME).then(function (cache) {

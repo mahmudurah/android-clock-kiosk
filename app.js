@@ -400,7 +400,7 @@
         try {
           var remote = JSON.parse(xhr.responseText);
           if (loadedVersion !== null && remote.version && remote.version !== loadedVersion) {
-            window.location.reload(true);
+            window.location.replace(window.location.pathname + "?v=" + encodeURIComponent(remote.version));
             return;
           }
           loadedVersion = remote.version || loadedVersion || DEFAULTS.version;
