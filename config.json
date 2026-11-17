@@ -1,0 +1,16 @@
+{
+  "version": "1",
+  "theme": "auto",
+  "dayTheme": "daylight",
+  "nightTheme": "oled",
+  "dayStartHour": 7,
+  "nightStartHour": 20,
+  "use24Hour": false,
+  "showSeconds": false,
+  "latitude": -33.7688,
+  "longitude": 150.9051,
+  "timezone": "Australia/Sydney",
+  "weatherRefreshMinutes": 20,
+  "configRefreshMinutes": 5,
+  "pixelShift": true
+}
