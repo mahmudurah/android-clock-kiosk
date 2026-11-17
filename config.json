@@ -1,6 +1,6 @@
 {
-  "version": "4",
-  "theme": "maria-rainbow",
+  "version": "5",
+  "theme": "auto",
   "clockMode": "auto",
   "childName": "Maria",
   "dayTheme": "maria-rainbow",

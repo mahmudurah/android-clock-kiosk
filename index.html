@@ -369,11 +369,12 @@
     body.mode-split #time { font-size: 14.5vw; }
     body.mode-split #ampm { font-size: 4.4vw; }
     body.mode-split #date { font-size: 5.5vw; margin-top: 1.5vh; }
-    body.mode-split .divider { width: 46vw; margin: 2vh 0; }
-    body.mode-split #weather-icon { width: 5.8vw; height: 5.8vw; }
-    body.mode-split #weather-temp { font-size: 7vw; }
-    body.mode-split #weather-cond { font-size: 4.8vw; }
-    body.mode-split #weather-hi-lo { font-size: 4.8vw; }
+    body.mode-split .divider { width: 46vw; margin: 1.8vh 0; }
+    body.mode-split .weather { -webkit-flex-wrap: wrap; flex-wrap: wrap; row-gap: 1vh; gap: 1.6vw; }
+    body.mode-split #weather-icon { width: 4.8vw; height: 4.8vw; }
+    body.mode-split #weather-temp { font-size: 6.2vw; }
+    body.mode-split #weather-cond { font-size: 4.2vw; }
+    body.mode-split #weather-hi-lo { font-size: 4.2vw; padding: 0.4vh 1.4vw; }
 
     /* ==========================================================================
        ANALOG-FIRST MODE (Giant Analog Dial + Bold Info Column)
@@ -401,11 +402,12 @@
     body.mode-analog #time { font-size: 9.5vw; }
     body.mode-analog #ampm { font-size: 3.5vw; }
     body.mode-analog #date { font-size: 6.2vw; margin-top: 1.5vh; }
-    body.mode-analog .divider { width: 40vw; margin: 2.2vh 0; }
-    body.mode-analog #weather-icon { width: 6.5vw; height: 6.5vw; }
-    body.mode-analog #weather-temp { font-size: 8vw; }
-    body.mode-analog #weather-cond { font-size: 5.2vw; }
-    body.mode-analog #weather-hi-lo { font-size: 5.2vw; }
+    body.mode-analog .divider { width: 40vw; margin: 1.8vh 0; }
+    body.mode-analog .weather { -webkit-flex-wrap: wrap; flex-wrap: wrap; row-gap: 1vh; gap: 1.6vw; }
+    body.mode-analog #weather-icon { width: 5.2vw; height: 5.2vw; }
+    body.mode-analog #weather-temp { font-size: 6.8vw; }
+    body.mode-analog #weather-cond { font-size: 4.4vw; }
+    body.mode-analog #weather-hi-lo { font-size: 4.4vw; padding: 0.4vh 1.4vw; }
 
     /* SVG Analog Clock Styling */
     .dial-circle {
@@ -557,6 +559,6 @@
   <div id="toast"></div>
   <button id="mode-btn" class="corner-btn" type="button" aria-label="Switch clock mode">&#9719;</button>
   <button id="theme-btn" class="corner-btn" type="button" aria-label="Switch theme">&#9680;</button>
-  <script src="app.js?v=4"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>
