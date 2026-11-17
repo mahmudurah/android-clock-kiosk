@@ -1,13 +1,15 @@
 (function () {
   var DEFAULTS = {
-    version: "1",
-    theme: "auto",
-    dayTheme: "daylight",
-    nightTheme: "oled",
+    version: "2",
+    theme: "maria-rainbow",
+    clockMode: "auto",
+    childName: "Maria",
+    dayTheme: "maria-rainbow",
+    nightTheme: "maria-space",
     dayStartHour: 7,
     nightStartHour: 20,
     use24Hour: false,
-    showSeconds: false,
+    showSeconds: true,
     latitude: -33.7688,
     longitude: 150.9051,
     timezone: "Australia/Sydney",
@@ -18,30 +20,38 @@
 
   var THEME_LIST = [
     "auto",
+    "maria-rainbow",
+    "maria-space",
+    "swiss",
+    "braun",
     "oled",
-    "daylight",
-    "paper",
-    "eink",
     "amber",
     "terminal",
-    "red-night",
+    "eink",
     "nord",
-    "espresso",
-    "midnight-blue"
+    "red-night"
   ];
 
   var THEME_LABELS = {
-    "auto": "Auto Day/Night",
-    "oled": "Pure OLED Dark",
-    "daylight": "Crisp Daylight",
-    "paper": "Warm Paper",
-    "eink": "E-Ink Mono",
-    "amber": "Retro Amber",
-    "terminal": "Terminal Green",
-    "red-night": "Bedroom Red",
-    "nord": "Nord Slate",
-    "espresso": "Espresso",
-    "midnight-blue": "Midnight Blue"
+    "auto": "Auto Day / Night",
+    "maria-rainbow": "Maria's Time Teacher",
+    "maria-space": "Maria's Starlight Galaxy",
+    "swiss": "Swiss Railway SBB",
+    "braun": "Braun Atelier Dark",
+    "oled": "Pure OLED Night",
+    "amber": "Retro Nixie Amber",
+    "terminal": "Phosphor Terminal",
+    "eink": "E-Ink Paper",
+    "nord": "Nordic Frost",
+    "red-night": "Bedroom Red"
+  };
+
+  var MODE_LIST = ["auto", "digital", "split", "analog"];
+  var MODE_LABELS = {
+    "auto": "Mode: Theme Default",
+    "digital": "Mode: Giant Digital",
+    "split": "Mode: Analog + Digital",
+    "analog": "Mode: Giant Analog"
   };
 
   var cfg = {};
@@ -56,18 +66,34 @@
   var tempEl = document.getElementById("weather-temp");
   var condEl = document.getElementById("weather-cond");
   var hiLoEl = document.getElementById("weather-hi-lo");
+  var weatherIconEl = document.getElementById("weather-icon");
+  var greetingTextEl = document.getElementById("greeting-text");
+  var wordTimeEl = document.getElementById("word-time");
   var stageEl = document.getElementById("stage");
+  var analogPaneEl = document.getElementById("analog-pane");
   var themeBtn = document.getElementById("theme-btn");
+  var modeBtn = document.getElementById("mode-btn");
   var toastEl = document.getElementById("toast");
+
+  var hourHandG = document.getElementById("hand-hour-g");
+  var minHandG = document.getElementById("hand-min-g");
+  var secHandG = document.getElementById("hand-sec-g");
 
   var DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  var HOUR_WORDS = [
+    "twelve", "one", "two", "three", "four", "five",
+    "six", "seven", "eight", "nine", "ten", "eleven", "twelve"
+  ];
 
   var loadedVersion = null;
   var lastRemoteTheme = null;
+  var lastRemoteMode = null;
   var localThemeOverride = null;
+  var localModeOverride = null;
   try {
-    localThemeOverride = window.localStorage.getItem("clock_theme");
+    localThemeOverride = window.localStorage.getItem("clock_theme_v2");
+    localModeOverride = window.localStorage.getItem("clock_mode_v2");
   } catch (e) {}
 
   var shiftIndex = 0;
@@ -82,6 +108,49 @@
   var clockTimer = null;
   var toastTimer = null;
 
+  function buildAnalogDial() {
+    var ticksG = document.getElementById("dial-ticks");
+    var numsG = document.getElementById("dial-nums");
+    var ticksHtml = "";
+    var numsHtml = "";
+    var i, angle, rad, x1, y1, x2, y2, nx, ny, mx, my;
+
+    for (i = 0; i < 60; i++) {
+      angle = i * 6;
+      rad = (angle - 90) * Math.PI / 180;
+      var isMajor = (i % 5 === 0);
+      var rOuter = 106;
+      var rInner = isMajor ? 95 : 100;
+      x1 = 120 + rInner * Math.cos(rad);
+      y1 = 120 + rInner * Math.sin(rad);
+      x2 = 120 + rOuter * Math.cos(rad);
+      y2 = 120 + rOuter * Math.sin(rad);
+      ticksHtml +=
+        '<line class="' + (isMajor ? "tick-major" : "tick-minor") +
+        '" x1="' + x1.toFixed(1) + '" y1="' + y1.toFixed(1) +
+        '" x2="' + x2.toFixed(1) + '" y2="' + y2.toFixed(1) + '" />';
+    }
+
+    for (i = 1; i <= 12; i++) {
+      angle = i * 30;
+      rad = (angle - 90) * Math.PI / 180;
+      nx = 120 + 76 * Math.cos(rad);
+      ny = 120 + 76 * Math.sin(rad);
+      numsHtml +=
+        '<text class="dial-num" x="' + nx.toFixed(1) + '" y="' + ny.toFixed(1) + '">' + i + "</text>";
+
+      mx = 120 + 109 * Math.cos(rad);
+      my = 120 + 109 * Math.sin(rad);
+      var mVal = (i * 5) % 60;
+      var mStr = mVal === 0 ? "00" : (mVal < 10 ? "0" + mVal : "" + mVal);
+      numsHtml +=
+        '<text class="dial-min-num" x="' + mx.toFixed(1) + '" y="' + my.toFixed(1) + '">' + mStr + "</text>";
+    }
+
+    ticksG.innerHTML = ticksHtml;
+    numsG.innerHTML = numsHtml;
+  }
+
   function pad2(n) {
     return n < 10 ? "0" + n : "" + n;
   }
@@ -92,7 +161,128 @@
     if (toastTimer) clearTimeout(toastTimer);
     toastTimer = setTimeout(function () {
       toastEl.style.opacity = "0";
-    }, 1400);
+    }, 1500);
+  }
+
+  function timeInWords(h24, m) {
+    var nearest5 = Math.round(m / 5) * 5;
+    var h = h24;
+    if (nearest5 > 30) h = (h + 1) % 24;
+    var h12 = h % 12;
+    if (h12 === 0) h12 = 12;
+    var hw = HOUR_WORDS[h12];
+
+    if (nearest5 === 0 || nearest5 === 60) {
+      var cur12 = h24 % 12;
+      if (cur12 === 0) cur12 = 12;
+      if (nearest5 === 60) cur12 = (cur12 % 12) + 1;
+      return "\u2022 " + HOUR_WORDS[cur12] + " o'clock";
+    }
+    if (nearest5 === 5) return "\u2022 five past " + hw;
+    if (nearest5 === 10) return "\u2022 ten past " + hw;
+    if (nearest5 === 15) return "\u2022 quarter past " + hw;
+    if (nearest5 === 20) return "\u2022 twenty past " + hw;
+    if (nearest5 === 25) return "\u2022 twenty-five past " + hw;
+    if (nearest5 === 30) return "\u2022 half past " + hw;
+    if (nearest5 === 35) return "\u2022 twenty-five to " + hw;
+    if (nearest5 === 40) return "\u2022 twenty to " + hw;
+    if (nearest5 === 45) return "\u2022 quarter to " + hw;
+    if (nearest5 === 50) return "\u2022 ten to " + hw;
+    if (nearest5 === 55) return "\u2022 five to " + hw;
+    return "";
+  }
+
+  function updateGreeting(hour, minute, activeTheme) {
+    var name = cfg.childName || "Maria";
+    var isMariaTheme = (activeTheme === "maria-rainbow" || activeTheme === "maria-space");
+    if (!isMariaTheme && !cfg.showGreetingAlways) {
+      return false;
+    }
+    var msg;
+    if (hour >= 6 && hour < 12) {
+      msg = "\u2600 Good morning, " + name + "!";
+    } else if (hour >= 12 && hour < 17) {
+      msg = "\u2728 Hi " + name + "! Happy afternoon";
+    } else if (hour >= 17 && hour < 20) {
+      msg = "\u263D Good evening, " + name + "!";
+    } else {
+      msg = "\u2605 Sweet dreams, " + name;
+    }
+    greetingTextEl.textContent = msg;
+    wordTimeEl.textContent = timeInWords(hour, minute);
+    return true;
+  }
+
+  function resolveTheme(hour) {
+    var selected = localThemeOverride || cfg.theme || "auto";
+    if (selected === "auto") {
+      var dayStart = typeof cfg.dayStartHour === "number" ? cfg.dayStartHour : 7;
+      var nightStart = typeof cfg.nightStartHour === "number" ? cfg.nightStartHour : 20;
+      return (hour >= dayStart && hour < nightStart)
+        ? (cfg.dayTheme || "maria-rainbow")
+        : (cfg.nightTheme || "maria-space");
+    }
+    return selected;
+  }
+
+  function resolveClockMode(activeTheme) {
+    var mode = localModeOverride || cfg.clockMode || "auto";
+    if (mode === "auto") {
+      if (activeTheme === "maria-rainbow" || activeTheme === "swiss" || activeTheme === "braun") {
+        return "split";
+      }
+      return "digital";
+    }
+    return mode;
+  }
+
+  function applyBodyClasses(hour, minute) {
+    var activeTheme = resolveTheme(hour);
+    var activeMode = resolveClockMode(activeTheme);
+    var hasGreeting = updateGreeting(hour, minute, activeTheme);
+    var cls = "theme-" + activeTheme + " mode-" + activeMode + (hasGreeting ? " show-greeting" : "");
+    if (document.body.className !== cls) {
+      document.body.className = cls;
+    }
+    return activeMode;
+  }
+
+  function updateClock() {
+    var now = new Date();
+    var h = now.getHours();
+    var m = now.getMinutes();
+    var s = now.getSeconds();
+
+    var activeMode = applyBodyClasses(h, m);
+    var needSeconds = cfg.showSeconds || activeMode === "split" || activeMode === "analog";
+
+    if (cfg.use24Hour) {
+      timeEl.textContent = pad2(h) + ":" + pad2(m);
+      ampmEl.textContent = cfg.showSeconds ? pad2(s) : "";
+    } else {
+      var suffix = h >= 12 ? "PM" : "AM";
+      var h12 = h % 12;
+      if (h12 === 0) h12 = 12;
+      timeEl.textContent = h12 + ":" + pad2(m);
+      ampmEl.textContent = suffix;
+    }
+
+    dateEl.textContent = DAYS[now.getDay()] + ", " + now.getDate() + " " + MONTHS[now.getMonth()];
+
+    if (activeMode === "split" || activeMode === "analog") {
+      var secAngle = s * 6;
+      var minAngle = m * 6 + s * 0.1;
+      var hourAngle = (h % 12) * 30 + m * 0.5;
+      hourHandG.setAttribute("transform", "rotate(" + hourAngle.toFixed(1) + " 120 120)");
+      minHandG.setAttribute("transform", "rotate(" + minAngle.toFixed(1) + " 120 120)");
+      secHandG.setAttribute("transform", "rotate(" + secAngle + " 120 120)");
+    }
+
+    var delay = needSeconds
+      ? (1000 - now.getMilliseconds() + 10)
+      : ((60 - s) * 1000 - now.getMilliseconds() + 20);
+    if (clockTimer) clearTimeout(clockTimer);
+    clockTimer = setTimeout(updateClock, delay);
   }
 
   function wmoDescription(code) {
@@ -106,52 +296,51 @@
     if (code >= 71 && code <= 77) return "Snow";
     if (code >= 80 && code <= 82) return "Showers";
     if (code >= 85 && code <= 86) return "Snow showers";
-    if (code >= 95) return "Thunderstorm";
+    if (code >= 95) return "Storm";
     return "Weather";
   }
 
-  function resolveTheme(hour) {
-    var selected = localThemeOverride || cfg.theme || "auto";
-    if (selected === "auto") {
-      var dayStart = typeof cfg.dayStartHour === "number" ? cfg.dayStartHour : 7;
-      var nightStart = typeof cfg.nightStartHour === "number" ? cfg.nightStartHour : 20;
-      return (hour >= dayStart && hour < nightStart) ? (cfg.dayTheme || "daylight") : (cfg.nightTheme || "oled");
+  function renderWeatherIcon(code, isNight) {
+    var c = "currentColor";
+    var a = "var(--accent-color)";
+    if (code === 0 || code === 1) {
+      if (isNight) {
+        weatherIconEl.innerHTML =
+          '<path fill="' + a + '" d="M40 12a20 20 0 1 0 12 36 16 16 0 1 1-12-36z"/>';
+      } else {
+        weatherIconEl.innerHTML =
+          '<circle cx="32" cy="32" r="13" fill="' + a + '"/>' +
+          '<g stroke="' + a + '" stroke-width="4" stroke-linecap="round">' +
+          '<line x1="32" y1="6" x2="32" y2="12"/><line x1="32" y1="52" x2="32" y2="58"/>' +
+          '<line x1="6" y1="32" x2="12" y2="32"/><line x1="52" y1="32" x2="58" y2="32"/>' +
+          '<line x1="14" y1="14" x2="18" y2="18"/><line x1="46" y1="46" x2="50" y2="50"/>' +
+          '<line x1="50" y1="14" x2="46" y2="18"/><line x1="18" y1="46" x2="14" y2="50"/>' +
+          "</g>";
+      }
+      return;
     }
-    return selected;
-  }
-
-  function applyTheme(hour) {
-    var cls = "theme-" + resolveTheme(hour);
-    if (document.body.className !== cls) {
-      document.body.className = cls;
+    if (code === 2) {
+      weatherIconEl.innerHTML =
+        '<circle cx="24" cy="24" r="10" fill="' + a + '"/>' +
+        '<path fill="' + c + '" d="M22 48h24a10 10 0 0 0 0-20 14 14 0 0 0-27-3A9 9 0 0 0 22 48z"/>';
+      return;
     }
-  }
-
-  function updateClock() {
-    var now = new Date();
-    var h = now.getHours();
-    var m = now.getMinutes();
-    var s = now.getSeconds();
-
-    if (cfg.use24Hour) {
-      timeEl.textContent = pad2(h) + ":" + pad2(m) + (cfg.showSeconds ? ":" + pad2(s) : "");
-      ampmEl.textContent = "";
-    } else {
-      var suffix = h >= 12 ? "PM" : "AM";
-      var h12 = h % 12;
-      if (h12 === 0) h12 = 12;
-      timeEl.textContent = h12 + ":" + pad2(m) + (cfg.showSeconds ? ":" + pad2(s) : "");
-      ampmEl.textContent = suffix;
+    if (code >= 51 && code <= 82) {
+      weatherIconEl.innerHTML =
+        '<path fill="' + c + '" d="M18 40h28a10 10 0 0 0 0-20 14 14 0 0 0-27-3A9 9 0 0 0 18 40z"/>' +
+        '<g stroke="' + a + '" stroke-width="4" stroke-linecap="round">' +
+        '<line x1="22" y1="46" x2="19" y2="56"/><line x1="32" y1="46" x2="29" y2="56"/><line x1="42" y1="46" x2="39" y2="56"/>' +
+        "</g>";
+      return;
     }
-
-    dateEl.textContent = DAYS[now.getDay()] + ", " + now.getDate() + " " + MONTHS[now.getMonth()];
-    applyTheme(h);
-
-    var delay = cfg.showSeconds
-      ? (1000 - now.getMilliseconds() + 10)
-      : ((60 - s) * 1000 - now.getMilliseconds() + 20);
-    if (clockTimer) clearTimeout(clockTimer);
-    clockTimer = setTimeout(updateClock, delay);
+    if (code >= 95) {
+      weatherIconEl.innerHTML =
+        '<path fill="' + c + '" d="M18 40h28a10 10 0 0 0 0-20 14 14 0 0 0-27-3A9 9 0 0 0 18 40z"/>' +
+        '<polygon fill="' + a + '" points="34,40 24,52 32,52 29,62 42,48 34,48"/>';
+      return;
+    }
+    weatherIconEl.innerHTML =
+      '<path fill="' + c + '" d="M18 46h28a11 11 0 0 0 0-22 15 15 0 0 0-29-3A10 10 0 0 0 18 46z"/>';
   }
 
   function fetchWeather() {
@@ -178,6 +367,8 @@
           }
           if (typeof cur.weather_code === "number") {
             condEl.textContent = wmoDescription(cur.weather_code);
+            var h = new Date().getHours();
+            renderWeatherIcon(cur.weather_code, h < 6 || h >= 19);
           }
           if (daily.temperature_2m_max && daily.temperature_2m_min) {
             var hi = Math.round(daily.temperature_2m_max[0]);
@@ -214,12 +405,16 @@
           }
           loadedVersion = remote.version || loadedVersion || DEFAULTS.version;
 
-          // If remote theme changed in config.json, clear local tap override so remote wins
           if (lastRemoteTheme !== null && remote.theme && remote.theme !== lastRemoteTheme) {
             localThemeOverride = null;
-            try { window.localStorage.removeItem("clock_theme"); } catch (e) {}
+            try { window.localStorage.removeItem("clock_theme_v2"); } catch (e) {}
+          }
+          if (lastRemoteMode !== null && remote.clockMode && remote.clockMode !== lastRemoteMode) {
+            localModeOverride = null;
+            try { window.localStorage.removeItem("clock_mode_v2"); } catch (e) {}
           }
           lastRemoteTheme = remote.theme || DEFAULTS.theme;
+          lastRemoteMode = remote.clockMode || DEFAULTS.clockMode;
 
           var key;
           for (key in remote) {
@@ -239,9 +434,20 @@
     var nextIdx = (idx + step + THEME_LIST.length) % THEME_LIST.length;
     var nextTheme = THEME_LIST[nextIdx];
     localThemeOverride = nextTheme;
-    try { window.localStorage.setItem("clock_theme", nextTheme); } catch (e) {}
-    applyTheme(new Date().getHours());
+    try { window.localStorage.setItem("clock_theme_v2", nextTheme); } catch (e) {}
+    updateClock();
     showToast(THEME_LABELS[nextTheme] || nextTheme);
+  }
+
+  function cycleMode() {
+    var current = localModeOverride || cfg.clockMode || "auto";
+    var idx = MODE_LIST.indexOf(current);
+    if (idx < 0) idx = 0;
+    var nextMode = MODE_LIST[(idx + 1) % MODE_LIST.length];
+    localModeOverride = nextMode;
+    try { window.localStorage.setItem("clock_mode_v2", nextMode); } catch (e) {}
+    updateClock();
+    showToast(MODE_LABELS[nextMode] || nextMode);
   }
 
   function runPixelShift() {
@@ -251,11 +457,10 @@
     stageEl.style.transform = "translate(" + xy[0] + "px, " + xy[1] + "px)";
   }
 
-  themeBtn.onclick = function () {
-    cycleTheme(1);
-  };
+  themeBtn.onclick = function () { cycleTheme(1); };
+  modeBtn.onclick = function () { cycleMode(); };
+  analogPaneEl.onclick = function () { cycleMode(); };
 
-  // Swipe left/right to switch themes
   var touchStartX = null;
   document.addEventListener("touchstart", function (e) {
     if (e.touches && e.touches.length === 1) {
@@ -275,6 +480,7 @@
     try { navigator.serviceWorker.register("sw.js"); } catch (e) {}
   }
 
+  buildAnalogDial();
   updateClock();
   fetchWeather();
   fetchRemoteConfig();

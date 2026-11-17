@@ -1,4 +1,4 @@
-var CACHE_NAME = "wall-clock-v1";
+var CACHE_NAME = "wall-clock-v2";
 var ASSETS = ["./", "./index.html", "./app.js"];
 
 self.addEventListener("install", function (event) {
@@ -11,7 +11,19 @@ self.addEventListener("install", function (event) {
 });
 
 self.addEventListener("activate", function (event) {
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(
+    caches.keys().then(function (keys) {
+      return Promise.all(
+        keys.map(function (key) {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        })
+      );
+    }).then(function () {
+      return self.clients.claim();
+    })
+  );
 });
 
 self.addEventListener("fetch", function (event) {

@@ -21,59 +21,195 @@
       -webkit-user-select: none;
     }
 
-    /* 1. Pure OLED Dark */
-    body.theme-oled { background-color: #050608; color: #c8cfd8; }
-    body.theme-oled .muted { color: #6b7685; }
-    body.theme-oled .divider { background-color: #1b2028; }
+    /* ==========================================================================
+       10 CURATED ULTRA-LIGHTWEIGHT THEMES (Zero blur/shadows for fast rendering)
+       ========================================================================== */
 
-    /* 2. Crisp Daylight */
-    body.theme-daylight { background-color: #f4f5f7; color: #111418; }
-    body.theme-daylight .muted { color: #525c68; }
-    body.theme-daylight .divider { background-color: #d8dde3; }
+    /* 1. Pure OLED Night */
+    body.theme-oled {
+      background-color: #000000;
+      color: #eef2f6;
+      --sub-color: #9ba5b4;
+      --accent-color: #58a6ff;
+      --divider-color: #1e242d;
+      --dial-bg: #0b0e13;
+      --dial-border: #252c37;
+      --hour-hand: #eef2f6;
+      --min-hand: #b8c2d1;
+      --sec-hand: #58a6ff;
+      --badge-bg: #11161f;
+    }
 
-    /* 3. Warm Paper */
-    body.theme-paper { background-color: #f5efe4; color: #2b2620; }
-    body.theme-paper .muted { color: #756a5c; }
-    body.theme-paper .divider { background-color: #dfd5c5; }
+    /* 2. Swiss Station (Mondaine SBB Inspired) */
+    body.theme-swiss {
+      background-color: #f4f4f0;
+      color: #111111;
+      --sub-color: #383838;
+      --accent-color: #e30613;
+      --divider-color: #cccccc;
+      --dial-bg: #ffffff;
+      --dial-border: #111111;
+      --hour-hand: #111111;
+      --min-hand: #111111;
+      --sec-hand: #e30613;
+      --badge-bg: #e6e6e0;
+    }
 
-    /* 4. E-Ink Monochrome */
-    body.theme-eink { background-color: #e6e6e2; color: #141414; font-family: "Courier New", Courier, monospace; }
-    body.theme-eink .muted { color: #555552; }
-    body.theme-eink .divider { background-color: #b8b8b2; }
+    /* 3. Braun Dark (Dieter Rams Inspired) */
+    body.theme-braun {
+      background-color: #161719;
+      color: #f2efe9;
+      --sub-color: #b5b0a6;
+      --accent-color: #f5b800;
+      --divider-color: #2e3034;
+      --dial-bg: #1f2023;
+      --dial-border: #3a3c42;
+      --hour-hand: #f2efe9;
+      --min-hand: #d8d3c8;
+      --sec-hand: #f5b800;
+      --badge-bg: #25272b;
+    }
 
-    /* 5. Retro Amber */
-    body.theme-amber { background-color: #080500; color: #ff9d2e; }
-    body.theme-amber .muted { color: #9c5b14; }
-    body.theme-amber .divider { background-color: #2e1b06; }
+    /* 4. Maria's Time Teacher (Color-coded Hour & Minute hands + Word Time) */
+    body.theme-maria-rainbow {
+      background-color: #fff8ee;
+      color: #1f2438;
+      --sub-color: #3f4766;
+      --accent-color: #ff477e;
+      --divider-color: #f0dec6;
+      --dial-bg: #ffffff;
+      --dial-border: #ff85a1;
+      --hour-hand: #ff477e;
+      --min-hand: #0096c7;
+      --sec-hand: #ffbe0b;
+      --badge-bg: #ffecf2;
+    }
 
-    /* 6. Terminal Green */
-    body.theme-terminal { background-color: #030a04; color: #4dff73; font-family: "Courier New", Courier, monospace; }
-    body.theme-terminal .muted { color: #228738; }
-    body.theme-terminal .divider { background-color: #0f3818; }
+    /* 5. Maria's Starlight Galaxy (Cozy Kid Night/Space Theme) */
+    body.theme-maria-space {
+      background-color: #090b16;
+      color: #f3eeff;
+      --sub-color: #b8a9e8;
+      --accent-color: #ffd166;
+      --divider-color: #23274a;
+      --dial-bg: #12152b;
+      --dial-border: #3b4175;
+      --hour-hand: #ff70a6;
+      --min-hand: #70d6ff;
+      --sec-hand: #ffd166;
+      --badge-bg: #181c38;
+    }
 
-    /* 7. Bedroom Red (low night glare) */
-    body.theme-red-night { background-color: #000000; color: #b82525; }
-    body.theme-red-night .muted { color: #661414; }
-    body.theme-red-night .divider { background-color: #240707; }
+    /* 6. Retro Nixie Amber */
+    body.theme-amber {
+      background-color: #070400;
+      color: #ff9e22;
+      --sub-color: #d9750b;
+      --accent-color: #ffc145;
+      --divider-color: #2e1a04;
+      --dial-bg: #120a00;
+      --dial-border: #4a2a06;
+      --hour-hand: #ff9e22;
+      --min-hand: #ffb84d;
+      --sec-hand: #ffd97d;
+      --badge-bg: #1c1002;
+    }
 
-    /* 8. Nord Slate */
-    body.theme-nord { background-color: #2e3440; color: #eceff4; }
-    body.theme-nord .muted { color: #88c0d0; }
-    body.theme-nord .divider { background-color: #434c5e; }
+    /* 7. Terminal Phosphor Green */
+    body.theme-terminal {
+      background-color: #020804;
+      color: #39ff5a;
+      font-family: "Courier New", Courier, monospace;
+      --sub-color: #26c941;
+      --accent-color: #7aff8f;
+      --divider-color: #0e3616;
+      --dial-bg: #051409;
+      --dial-border: #195926;
+      --hour-hand: #39ff5a;
+      --min-hand: #26c941;
+      --sec-hand: #a3ffcf;
+      --badge-bg: #08210f;
+    }
 
-    /* 9. Espresso */
-    body.theme-espresso { background-color: #17120e; color: #eadbc8; }
-    body.theme-espresso .muted { color: #9a8570; }
-    body.theme-espresso .divider { background-color: #30251c; }
+    /* 8. E-Ink Paper & Ink */
+    body.theme-eink {
+      background-color: #e6e4dc;
+      color: #121211;
+      font-family: Georgia, "Times New Roman", Times, serif;
+      --sub-color: #363633;
+      --accent-color: #121211;
+      --divider-color: #99978f;
+      --dial-bg: #efede6;
+      --dial-border: #121211;
+      --hour-hand: #121211;
+      --min-hand: #121211;
+      --sec-hand: #555550;
+      --badge-bg: #dad8cf;
+    }
 
-    /* 10. Midnight Blue */
-    body.theme-midnight-blue { background-color: #081226; color: #d6e4ff; }
-    body.theme-midnight-blue .muted { color: #6c8ec4; }
-    body.theme-midnight-blue .divider { background-color: #162a52; }
+    /* 9. Nordic Frost */
+    body.theme-nord {
+      background-color: #242933;
+      color: #eceff4;
+      --sub-color: #9ecae1;
+      --accent-color: #88c0d0;
+      --divider-color: #3b4252;
+      --dial-bg: #2e3440;
+      --dial-border: #4c566a;
+      --hour-hand: #eceff4;
+      --min-hand: #88c0d0;
+      --sec-hand: #ebcb8b;
+      --badge-bg: #323946;
+    }
 
-    .wrap {
+    /* 10. Deep Bedroom Red (Zero Night Glare) */
+    body.theme-red-night {
+      background-color: #000000;
+      color: #cc2929;
+      --sub-color: #991f1f;
+      --accent-color: #e03e3e;
+      --divider-color: #2b0909;
+      --dial-bg: #0d0202;
+      --dial-border: #3d0c0c;
+      --hour-hand: #cc2929;
+      --min-hand: #a31f1f;
+      --sec-hand: #ff4d4d;
+      --badge-bg: #170404;
+    }
+
+    .muted { color: var(--sub-color); }
+    .accent { color: var(--accent-color); }
+
+    /* ==========================================================================
+       MAIN STAGE & MODES (Digital / Split / Analog)
+       ========================================================================== */
+    .stage {
       width: 100%;
       height: 100%;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+      justify-content: center;
+      padding: 3vh 4vw;
+      text-align: center;
+    }
+
+    .analog-pane {
+      display: none;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+      justify-content: center;
+    }
+
+    .digital-pane {
       display: -webkit-box;
       display: -webkit-flex;
       display: flex;
@@ -81,16 +217,37 @@
       -webkit-box-direction: normal;
       -webkit-flex-direction: column;
       flex-direction: column;
-      -webkit-box-pack: center;
-      -webkit-justify-content: center;
-      justify-content: center;
       -webkit-box-align: center;
       -webkit-align-items: center;
       align-items: center;
-      padding: 4vh 5vw;
-      text-align: center;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+      justify-content: center;
+      width: 100%;
     }
 
+    /* Greeting / Word-clock banner */
+    #greeting-bar {
+      display: none;
+      background-color: var(--badge-bg);
+      padding: 1vh 2.8vw;
+      border-radius: 999px;
+      font-size: 3.6vw;
+      font-weight: 700;
+      margin-bottom: 1.5vh;
+      letter-spacing: -0.01em;
+    }
+
+    body.show-greeting #greeting-bar {
+      display: inline-block;
+    }
+
+    #word-time {
+      color: var(--accent-color);
+      margin-left: 1.2vw;
+    }
+
+    /* Digital Time */
     .time-row {
       display: -webkit-box;
       display: -webkit-flex;
@@ -101,36 +258,41 @@
       -webkit-box-pack: center;
       -webkit-justify-content: center;
       justify-content: center;
-      line-height: 0.95;
+      line-height: 0.9;
     }
 
     #time {
-      font-size: 25vw;
-      font-weight: 700;
-      letter-spacing: -0.03em;
+      font-size: 24vw;
+      font-weight: 800;
+      letter-spacing: -0.035em;
       font-variant-numeric: tabular-nums;
     }
 
     #ampm {
-      font-size: 5.5vw;
-      font-weight: 600;
+      font-size: 7vw;
+      font-weight: 700;
       margin-left: 1.5vw;
       text-transform: uppercase;
     }
 
+    /* Large Date */
     #date {
-      margin-top: 2.5vh;
-      font-size: 6.5vw;
-      font-weight: 500;
-      letter-spacing: -0.01em;
+      margin-top: 1.8vh;
+      font-size: 8.2vw;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      line-height: 1.05;
     }
 
     .divider {
-      width: 45vw;
-      height: 2px;
-      margin: 4vh 0;
+      width: 68vw;
+      height: 3px;
+      background-color: var(--divider-color);
+      margin: 2.4vh 0;
+      border-radius: 2px;
     }
 
+    /* Large Weather Row */
     .weather {
       display: -webkit-box;
       display: -webkit-flex;
@@ -141,33 +303,188 @@
       -webkit-box-pack: center;
       -webkit-justify-content: center;
       justify-content: center;
-      gap: 3vw;
-      font-size: 4.8vw;
-      font-weight: 500;
+      -webkit-flex-wrap: wrap;
+      flex-wrap: wrap;
+      gap: 2.4vw;
+    }
+
+    #weather-icon {
+      width: 8.2vw;
+      height: 8.2vw;
+      display: inline-block;
+      vertical-align: middle;
     }
 
     #weather-temp {
-      font-size: 6.5vw;
-      font-weight: 700;
+      font-size: 9.8vw;
+      font-weight: 800;
       font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+
+    #weather-cond {
+      font-size: 6.8vw;
+      font-weight: 600;
     }
 
     #weather-hi-lo {
+      font-size: 6.8vw;
+      font-weight: 700;
       font-variant-numeric: tabular-nums;
+      background-color: var(--badge-bg);
+      padding: 0.6vh 2vw;
+      border-radius: 16px;
     }
 
-    #theme-btn {
+    /* ==========================================================================
+       SPLIT MODE (Analog + Digital Side by Side)
+       ========================================================================== */
+    body.mode-split .analog-pane {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      width: 44%;
+      padding-right: 2vw;
+    }
+
+    body.mode-split .digital-pane {
+      width: 56%;
+    }
+
+    body.mode-split #analog-svg {
+      width: 40vw;
+      height: 40vw;
+      max-width: 82vh;
+      max-height: 82vh;
+    }
+
+    body.mode-split #greeting-bar { font-size: 2.8vw; }
+    body.mode-split #time { font-size: 14.5vw; }
+    body.mode-split #ampm { font-size: 4.4vw; }
+    body.mode-split #date { font-size: 5.5vw; margin-top: 1.5vh; }
+    body.mode-split .divider { width: 46vw; margin: 2vh 0; }
+    body.mode-split #weather-icon { width: 5.8vw; height: 5.8vw; }
+    body.mode-split #weather-temp { font-size: 7vw; }
+    body.mode-split #weather-cond { font-size: 4.8vw; }
+    body.mode-split #weather-hi-lo { font-size: 4.8vw; }
+
+    /* ==========================================================================
+       ANALOG-FIRST MODE (Giant Analog Dial + Bold Info Column)
+       ========================================================================== */
+    body.mode-analog .analog-pane {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      width: 52%;
+      padding-right: 2vw;
+    }
+
+    body.mode-analog .digital-pane {
+      width: 48%;
+    }
+
+    body.mode-analog #analog-svg {
+      width: 48vw;
+      height: 48vw;
+      max-width: 88vh;
+      max-height: 88vh;
+    }
+
+    body.mode-analog #greeting-bar { font-size: 3vw; }
+    body.mode-analog #time { font-size: 9.5vw; }
+    body.mode-analog #ampm { font-size: 3.5vw; }
+    body.mode-analog #date { font-size: 6.2vw; margin-top: 1.5vh; }
+    body.mode-analog .divider { width: 40vw; margin: 2.2vh 0; }
+    body.mode-analog #weather-icon { width: 6.5vw; height: 6.5vw; }
+    body.mode-analog #weather-temp { font-size: 8vw; }
+    body.mode-analog #weather-cond { font-size: 5.2vw; }
+    body.mode-analog #weather-hi-lo { font-size: 5.2vw; }
+
+    /* SVG Analog Clock Styling */
+    .dial-circle {
+      fill: var(--dial-bg);
+      stroke: var(--dial-border);
+      stroke-width: 4;
+    }
+    .tick-major { stroke: currentColor; stroke-width: 3.5; stroke-linecap: round; }
+    .tick-minor { stroke: var(--sub-color); stroke-width: 1.5; stroke-linecap: round; opacity: 0.6; }
+    .dial-num {
+      fill: currentColor;
+      font-size: 22px;
+      font-weight: 800;
+      text-anchor: middle;
+      dominant-baseline: central;
+    }
+    body.theme-maria-rainbow .dial-num { fill: var(--hour-hand); }
+    .dial-min-num {
+      display: none;
+      fill: var(--min-hand);
+      font-size: 10px;
+      font-weight: 700;
+      text-anchor: middle;
+      dominant-baseline: central;
+    }
+    body.theme-maria-rainbow .dial-min-num,
+    body.theme-maria-space .dial-min-num {
+      display: block;
+    }
+    .hand-hour { stroke: var(--hour-hand); stroke-width: 8; stroke-linecap: round; }
+    .hand-min { stroke: var(--min-hand); stroke-width: 5.5; stroke-linecap: round; }
+    .hand-sec { stroke: var(--sec-hand); stroke-width: 2.5; stroke-linecap: round; }
+    .sec-tip { fill: var(--sec-hand); }
+    .center-cap { fill: var(--sec-hand); stroke: var(--dial-bg); stroke-width: 2; }
+
+    /* Portrait layout adjustments */
+    @media (orientation: portrait) {
+      .stage {
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -webkit-flex-direction: column;
+        flex-direction: column;
+      }
+      #greeting-bar { font-size: 4.5vw; }
+      #time { font-size: 25vw; }
+      #ampm { font-size: 7vw; }
+      #date { font-size: 8.8vw; }
+      .divider { width: 82vw; }
+      #weather-icon { width: 9vw; height: 9vw; }
+      #weather-temp { font-size: 11vw; }
+      #weather-cond { font-size: 7.5vw; }
+      #weather-hi-lo { font-size: 7.5vw; }
+
+      body.mode-split .analog-pane,
+      body.mode-analog .analog-pane {
+        width: 100%;
+        padding-right: 0;
+        margin-bottom: 2.5vh;
+      }
+      body.mode-split .digital-pane,
+      body.mode-analog .digital-pane {
+        width: 100%;
+      }
+      body.mode-split #analog-svg { width: 54vw; height: 54vw; }
+      body.mode-analog #analog-svg { width: 68vw; height: 68vw; }
+      body.mode-split #time { font-size: 20vw; }
+      body.mode-split #date { font-size: 7.2vw; }
+      body.mode-split #weather-temp { font-size: 9vw; }
+      body.mode-split #weather-cond,
+      body.mode-split #weather-hi-lo { font-size: 6.2vw; }
+    }
+
+    /* Corner Controls & Toast */
+    .corner-btn {
       position: fixed;
       bottom: 2vh;
-      right: 2vw;
       background: transparent;
       border: none;
       color: inherit;
-      opacity: 0.25;
-      font-size: 2.4vh;
+      opacity: 0.28;
+      font-size: 3.2vh;
       padding: 1vh 1.5vw;
       cursor: pointer;
     }
+    #mode-btn { left: 2vw; }
+    #theme-btn { right: 2vw; }
 
     #toast {
       position: fixed;
@@ -175,40 +492,64 @@
       left: 50%;
       -webkit-transform: translateX(-50%);
       transform: translateX(-50%);
-      background: rgba(128, 128, 128, 0.25);
+      background-color: var(--badge-bg);
+      border: 2px solid var(--divider-color);
       color: inherit;
-      padding: 0.8vh 2.5vw;
+      padding: 1vh 3vw;
       border-radius: 999px;
-      font-size: 2.4vh;
+      font-size: 2.8vh;
+      font-weight: 700;
       opacity: 0;
       pointer-events: none;
     }
-
-    @media (orientation: portrait) {
-      #time { font-size: 26vw; }
-      #ampm { font-size: 6vw; }
-      #date { font-size: 7vw; }
-      .weather { font-size: 5vw; }
-      #weather-temp { font-size: 7vw; }
-    }
   </style>
 </head>
-<body class="theme-oled">
-  <div class="wrap" id="stage">
-    <div class="time-row">
-      <span id="time">--:--</span>
-      <span id="ampm" class="muted"></span>
+<body class="theme-maria-rainbow mode-split show-greeting">
+  <div class="stage" id="stage">
+    <!-- Pure SVG Analog Clock (Zero canvas overhead) -->
+    <div class="analog-pane" id="analog-pane">
+      <svg id="analog-svg" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+        <circle class="dial-circle" cx="120" cy="120" r="114" />
+        <g id="dial-ticks"></g>
+        <g id="dial-nums"></g>
+        <g id="hand-hour-g" transform="rotate(0 120 120)">
+          <line class="hand-hour" x1="120" y1="132" x2="120" y2="62" />
+        </g>
+        <g id="hand-min-g" transform="rotate(0 120 120)">
+          <line class="hand-min" x1="120" y1="136" x2="120" y2="38" />
+        </g>
+        <g id="hand-sec-g" transform="rotate(0 120 120)">
+          <line class="hand-sec" x1="120" y1="142" x2="120" y2="34" />
+          <circle class="sec-tip" cx="120" cy="34" r="5.5" />
+        </g>
+        <circle class="center-cap" cx="120" cy="120" r="5" />
+      </svg>
     </div>
-    <div id="date" class="muted">---</div>
-    <div class="divider"></div>
-    <div class="weather">
-      <span id="weather-temp">--&deg;</span>
-      <span id="weather-cond" class="muted">Loading...</span>
-      <span id="weather-hi-lo" class="muted"></span>
+
+    <!-- High-Contrast Digital & Weather Pane -->
+    <div class="digital-pane">
+      <div id="greeting-bar">
+        <span id="greeting-text"></span>
+        <span id="word-time"></span>
+      </div>
+      <div class="time-row">
+        <span id="time">--:--</span>
+        <span id="ampm" class="muted"></span>
+      </div>
+      <div id="date" class="muted">---</div>
+      <div class="divider"></div>
+      <div class="weather">
+        <svg id="weather-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"></svg>
+        <span id="weather-temp">--&deg;</span>
+        <span id="weather-cond" class="muted">Loading...</span>
+        <span id="weather-hi-lo">H --&deg; &nbsp; L --&deg;</span>
+      </div>
     </div>
   </div>
+
   <div id="toast"></div>
-  <button id="theme-btn" type="button" aria-label="Cycle theme">&#9680;</button>
+  <button id="mode-btn" class="corner-btn" type="button" aria-label="Switch clock mode">&#9719;</button>
+  <button id="theme-btn" class="corner-btn" type="button" aria-label="Switch theme">&#9680;</button>
   <script src="app.js"></script>
 </body>
 </html>
