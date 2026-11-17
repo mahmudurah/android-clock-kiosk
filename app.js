@@ -119,8 +119,8 @@
       angle = i * 6;
       rad = (angle - 90) * Math.PI / 180;
       var isMajor = (i % 5 === 0);
-      var rOuter = 106;
-      var rInner = isMajor ? 95 : 100;
+      var rOuter = 95;
+      var rInner = isMajor ? 85 : 90;
       x1 = 120 + rInner * Math.cos(rad);
       y1 = 120 + rInner * Math.sin(rad);
       x2 = 120 + rOuter * Math.cos(rad);
@@ -134,13 +134,13 @@
     for (i = 1; i <= 12; i++) {
       angle = i * 30;
       rad = (angle - 90) * Math.PI / 180;
-      nx = 120 + 76 * Math.cos(rad);
-      ny = 120 + 76 * Math.sin(rad);
+      nx = 120 + 67 * Math.cos(rad);
+      ny = 120 + 67 * Math.sin(rad);
       numsHtml +=
         '<text class="dial-num" x="' + nx.toFixed(1) + '" y="' + ny.toFixed(1) + '">' + i + "</text>";
 
-      mx = 120 + 109 * Math.cos(rad);
-      my = 120 + 109 * Math.sin(rad);
+      mx = 120 + 105 * Math.cos(rad);
+      my = 120 + 105 * Math.sin(rad);
       var mVal = (i * 5) % 60;
       var mStr = mVal === 0 ? "00" : (mVal < 10 ? "0" + mVal : "" + mVal);
       numsHtml +=
@@ -228,7 +228,7 @@
   function resolveClockMode(activeTheme) {
     var mode = localModeOverride || cfg.clockMode || "auto";
     if (mode === "auto") {
-      if (activeTheme === "maria-rainbow" || activeTheme === "swiss" || activeTheme === "braun") {
+      if (activeTheme === "maria-rainbow" || activeTheme === "maria-space" || activeTheme === "swiss" || activeTheme === "braun") {
         return "split";
       }
       return "digital";

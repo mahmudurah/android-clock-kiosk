@@ -358,7 +358,11 @@
       max-height: 82vh;
     }
 
-    body.mode-split #greeting-bar { font-size: 2.8vw; }
+    body.mode-split #greeting-bar {
+      font-size: 2.25vw;
+      padding: 0.8vh 2vw;
+      white-space: nowrap;
+    }
     body.mode-split #time { font-size: 14.5vw; }
     body.mode-split #ampm { font-size: 4.4vw; }
     body.mode-split #date { font-size: 5.5vw; margin-top: 1.5vh; }
@@ -550,6 +554,6 @@
   <div id="toast"></div>
   <button id="mode-btn" class="corner-btn" type="button" aria-label="Switch clock mode">&#9719;</button>
   <button id="theme-btn" class="corner-btn" type="button" aria-label="Switch theme">&#9680;</button>
-  <script src="app.js?v=2"></script>
+  <script src="app.js?v=3"></script>
 </body>
 </html>
