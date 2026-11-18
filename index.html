@@ -501,6 +501,31 @@
     body.mode-analog #weather-cond { font-size: 4.4vw; }
     body.mode-analog #weather-hi-lo { font-size: 4.4vw; padding: 0.4vh 1.4vw; }
 
+    /* ==========================================================================
+       PURE ANALOG MODE (Just the Analog Clock, Nothing Else)
+       ========================================================================== */
+    body.mode-analog-only .stage {
+      padding: 2vh 2vw;
+    }
+    body.mode-analog-only #greeting-bar,
+    body.mode-analog-only .digital-pane,
+    body.mode-analog-only #piano-bar {
+      display: none !important;
+    }
+    body.mode-analog-only .analog-pane {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      width: 100%;
+      padding-right: 0;
+    }
+    body.mode-analog-only #analog-svg {
+      width: 88vh;
+      height: 88vh;
+      max-width: 88vw;
+      max-height: 88vw;
+    }
+
     /* SVG Analog Clock Styling */
     .dial-circle {
       fill: var(--dial-bg);
@@ -728,6 +753,6 @@
   </div>
   <button id="mode-btn" class="corner-btn" type="button" aria-label="Switch clock mode">&#9719;</button>
   <button id="theme-btn" class="corner-btn" type="button" aria-label="Switch theme">&#9680;</button>
-  <script src="app.js?v=9"></script>
+  <script src="app.js?v=10"></script>
 </body>
 </html>

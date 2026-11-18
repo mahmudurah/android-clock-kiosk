@@ -51,12 +51,13 @@
     "classic-light": "Classic Digital Light"
   };
 
-  var MODE_LIST = ["auto", "digital", "split", "analog"];
+  var MODE_LIST = ["auto", "digital", "split", "analog", "analog-only"];
   var MODE_LABELS = {
     "auto": "Mode: Theme Default",
     "digital": "Mode: Giant Digital",
     "split": "Mode: Analog + Digital",
-    "analog": "Mode: Giant Analog"
+    "analog": "Mode: Giant Analog",
+    "analog-only": "Mode: Pure Analog"
   };
 
   var cfg = {};
@@ -272,7 +273,7 @@
     var s = now.getSeconds();
 
     var activeMode = applyBodyClasses(h, m);
-    var needSeconds = cfg.showSeconds || activeMode === "split" || activeMode === "analog";
+    var needSeconds = cfg.showSeconds || activeMode === "split" || activeMode === "analog" || activeMode === "analog-only";
 
     if (cfg.use24Hour) {
       timeEl.textContent = pad2(h) + ":" + pad2(m);
@@ -292,7 +293,7 @@
       dateEl.textContent = DAYS[now.getDay()] + ", " + now.getDate() + " " + MONTHS[now.getMonth()];
     }
 
-    if (activeMode === "split" || activeMode === "analog") {
+    if (activeMode === "split" || activeMode === "analog" || activeMode === "analog-only") {
       var secAngle = s * 6;
       var minAngle = m * 6 + s * 0.1;
       var hourAngle = (h % 12) * 30 + m * 0.5;
