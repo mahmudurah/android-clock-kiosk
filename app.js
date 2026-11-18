@@ -51,6 +51,22 @@
     "classic-light": "Classic Digital Light"
   };
 
+  var THEME_SWATCHES = {
+    "auto": ["#fff8ee", "#090b16"],
+    "maria-rainbow": ["#fff8ee", "#ff477e"],
+    "maria-space": ["#090b16", "#ffd166"],
+    "swiss": ["#f4f4f0", "#e30613"],
+    "braun": ["#161719", "#f5b800"],
+    "oled": ["#000000", "#58a6ff"],
+    "amber": ["#070400", "#ff9e22"],
+    "terminal": ["#020804", "#39ff5a"],
+    "eink": ["#e6e4dc", "#121211"],
+    "nord": ["#242933", "#88c0d0"],
+    "red-night": ["#000000", "#cc2929"],
+    "classic-dark": ["#050608", "#c8cfd8"],
+    "classic-light": ["#f4f5f7", "#111418"]
+  };
+
   var MODE_LIST = ["auto", "digital", "split", "analog", "analog-only"];
   var MODE_LABELS = {
     "auto": "Mode: Theme Default",
@@ -661,6 +677,82 @@
 
   themeBtn.onclick = function () { cycleTheme(1); };
   modeBtn.onclick = function () { cycleMode(); };
+
+  /* ==========================================================================
+     QUICK PICKER OVERLAY (Visual Layout & Theme Selector)
+     ========================================================================== */
+  var pickerBtn = document.getElementById("picker-btn");
+  var pickerOverlay = document.getElementById("picker-overlay");
+  var pickerClose = document.getElementById("picker-close");
+  var pickerModesEl = document.getElementById("picker-modes");
+  var pickerThemesEl = document.getElementById("picker-themes");
+
+  function renderPicker() {
+    if (!pickerModesEl || !pickerThemesEl) return;
+    var activeMode = localModeOverride || cfg.clockMode || "auto";
+    var activeTheme = localThemeOverride || cfg.theme || "auto";
+    var i, id, label, sw, btn;
+
+    pickerModesEl.innerHTML = "";
+    for (i = 0; i < MODE_LIST.length; i++) {
+      id = MODE_LIST[i];
+      label = (MODE_LABELS[id] || id).replace("Mode: ", "");
+      btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "pick-btn" + (id === activeMode ? " active" : "");
+      btn.textContent = (id === activeMode ? "\u2713 " : "") + label;
+      btn.setAttribute("data-mode", id);
+      btn.onclick = function () {
+        var m = this.getAttribute("data-mode");
+        localModeOverride = m;
+        try { window.localStorage.setItem("clock_mode_v2", m); } catch (e) {}
+        updateClock();
+        renderPicker();
+      };
+      pickerModesEl.appendChild(btn);
+    }
+
+    pickerThemesEl.innerHTML = "";
+    for (i = 0; i < THEME_LIST.length; i++) {
+      id = THEME_LIST[i];
+      label = THEME_LABELS[id] || id;
+      sw = THEME_SWATCHES[id] || ["#111", "#fff"];
+      btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "pick-btn" + (id === activeTheme ? " active" : "");
+      btn.setAttribute("data-theme", id);
+      btn.innerHTML =
+        '<span class="swatch" style="background:linear-gradient(135deg,' + sw[0] + ' 50%,' + sw[1] + ' 50%)"></span>' +
+        '<span>' + (id === activeTheme ? "\u2713 " : "") + label + "</span>";
+      btn.onclick = function () {
+        var t = this.getAttribute("data-theme");
+        localThemeOverride = t;
+        try { window.localStorage.setItem("clock_theme_v2", t); } catch (e) {}
+        updateClock();
+        renderPicker();
+      };
+      pickerThemesEl.appendChild(btn);
+    }
+  }
+
+  function openPicker() {
+    if (!pickerOverlay) return;
+    renderPicker();
+    pickerOverlay.className = "open";
+  }
+
+  function closePicker() {
+    if (!pickerOverlay) return;
+    pickerOverlay.className = "";
+  }
+
+  if (pickerBtn) pickerBtn.onclick = openPicker;
+  if (pickerClose) pickerClose.onclick = closePicker;
+  if (pickerOverlay) {
+    pickerOverlay.onclick = function (e) {
+      if (e.target === pickerOverlay) closePicker();
+    };
+  }
 
   var touchStartX = null;
   document.addEventListener("touchstart", function (e) {
