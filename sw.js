@@ -1,4 +1,4 @@
-var CACHE_NAME = "wall-clock-v12";
+var CACHE_NAME = "wall-clock-v13";
 var ASSETS = ["./", "./index.html", "./app.js"];
 
 self.addEventListener("install", function (event) {

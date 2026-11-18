@@ -473,6 +473,21 @@
     weatherRetryTimer = setTimeout(fetchWeather, 20000);
   }
 
+  function interpolateWttrUV(hourly, nowDate) {
+    if (!hourly || !hourly.length) return null;
+    var nowHours = nowDate.getHours() + nowDate.getMinutes() / 60;
+    var idx = Math.floor(nowHours / 3);
+    if (idx < 0) idx = 0;
+    if (idx >= hourly.length) idx = hourly.length - 1;
+    var nextIdx = idx + 1 < hourly.length ? idx + 1 : idx;
+    var uv0 = parseFloat(hourly[idx].uvIndex);
+    var uv1 = parseFloat(hourly[nextIdx].uvIndex);
+    if (isNaN(uv0)) return null;
+    if (isNaN(uv1) || nextIdx === idx) return uv0;
+    var frac = (nowHours - idx * 3) / 3;
+    return uv0 + (uv1 - uv0) * frac;
+  }
+
   function fetchWeatherFallback() {
     var url = "https://wttr.in/" + cfg.latitude + "," + cfg.longitude + "?format=j1";
     var xhr = new XMLHttpRequest();
@@ -485,16 +500,19 @@
           var data = JSON.parse(xhr.responseText);
           var cur = (data.current_condition && data.current_condition[0]) || {};
           var day = (data.weather && data.weather[0]) || {};
-          var h = new Date().getHours();
+          var now = new Date();
+          var h = now.getHours();
           var wmo = wwoToWmo(cur.weatherCode);
           var desc = (cur.weatherDesc && cur.weatherDesc[0] && cur.weatherDesc[0].value) || wmoDescription(wmo);
+          var interpUV = interpolateWttrUV(day.hourly, now);
+          var uvVal = interpUV !== null ? interpUV : parseFloat(cur.uvIndex);
           applyWeatherData({
             temp: parseFloat(cur.temp_C),
             wmo: wmo,
             cond: desc,
             hi: parseFloat(day.maxtempC),
             lo: parseFloat(day.mintempC),
-            uv: parseFloat(cur.uvIndex),
+            uv: uvVal,
             isDay: (h >= 6 && h < 19)
           }, false);
           return;
@@ -521,7 +539,7 @@
 
     var xhr = new XMLHttpRequest();
     xhr.open("GET", url, true);
-    xhr.timeout = 12000;
+    xhr.timeout = 6000;
     xhr.onreadystatechange = function () {
       if (xhr.readyState !== 4) return;
       if (xhr.status >= 200 && xhr.status < 300) {
