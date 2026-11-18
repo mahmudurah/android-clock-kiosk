@@ -189,14 +189,31 @@
       display: -webkit-box;
       display: -webkit-flex;
       display: flex;
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
+      -webkit-flex-direction: column;
+      flex-direction: column;
       -webkit-box-align: center;
       -webkit-align-items: center;
       align-items: center;
       -webkit-box-pack: center;
       -webkit-justify-content: center;
       justify-content: center;
-      padding: 3vh 4vw;
+      padding: 2.5vh 4vw 7vh 4vw;
       text-align: center;
+    }
+
+    .main-row {
+      width: 100%;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+      justify-content: center;
     }
 
     .analog-pane {
@@ -234,12 +251,22 @@
       border-radius: 999px;
       font-size: 3.6vw;
       font-weight: 700;
-      margin-bottom: 1.5vh;
+      margin-bottom: 2vh;
       letter-spacing: -0.01em;
+      white-space: nowrap;
     }
 
     body.show-greeting #greeting-bar {
       display: inline-block;
+    }
+
+    body.show-greeting.mode-split #greeting-bar,
+    body.show-greeting.mode-analog #greeting-bar {
+      -webkit-align-self: flex-start;
+      align-self: flex-start;
+      font-size: 3.3vw;
+      padding: 0.9vh 2.4vw;
+      margin-bottom: 2.2vh;
     }
 
     #word-time {
@@ -275,13 +302,17 @@
       text-transform: uppercase;
     }
 
-    /* Large Date */
+    /* Large 2-line Date */
     #date {
-      margin-top: 1.8vh;
-      font-size: 8.2vw;
+      margin-top: 1.4vh;
+      font-size: 7.4vw;
       font-weight: 700;
       letter-spacing: -0.015em;
-      line-height: 1.05;
+      line-height: 1.12;
+      white-space: nowrap;
+    }
+    #date-day, #date-num {
+      white-space: nowrap;
     }
 
     .divider {
@@ -422,21 +453,16 @@
     }
 
     body.mode-split #analog-svg {
-      width: 40vw;
-      height: 40vw;
-      max-width: 82vh;
-      max-height: 82vh;
+      width: 42vw;
+      height: 42vw;
+      max-width: 76vh;
+      max-height: 76vh;
     }
 
-    body.mode-split #greeting-bar {
-      font-size: 2.25vw;
-      padding: 0.8vh 2vw;
-      white-space: nowrap;
-    }
-    body.mode-split #time { font-size: 14.5vw; }
+    body.mode-split #time { font-size: 14.2vw; }
     body.mode-split #ampm { font-size: 4.4vw; }
-    body.mode-split #date { font-size: 5.5vw; margin-top: 1.5vh; }
-    body.mode-split .divider { width: 46vw; margin: 1.8vh 0; }
+    body.mode-split #date { font-size: 5.2vw; margin-top: 1.2vh; }
+    body.mode-split .divider { width: 46vw; margin: 1.6vh 0; }
     body.mode-split .weather { -webkit-flex-wrap: wrap; flex-wrap: wrap; row-gap: 1vh; gap: 1.6vw; }
     body.mode-split #weather-icon { width: 4.8vw; height: 4.8vw; }
     body.mode-split #weather-temp { font-size: 6.2vw; }
@@ -461,11 +487,10 @@
     body.mode-analog #analog-svg {
       width: 48vw;
       height: 48vw;
-      max-width: 88vh;
-      max-height: 88vh;
+      max-width: 78vh;
+      max-height: 78vh;
     }
 
-    body.mode-analog #greeting-bar { font-size: 3vw; }
     body.mode-analog #time { font-size: 9.5vw; }
     body.mode-analog #ampm { font-size: 3.5vw; }
     body.mode-analog #date { font-size: 6.2vw; margin-top: 1.5vh; }
@@ -559,7 +584,7 @@
       padding: 1vh 1.5vw;
       cursor: pointer;
     }
-    #mode-btn { left: 2vw; }
+    #mode-btn { right: 7vw; }
     #theme-btn { right: 2vw; }
 
     #toast {
@@ -579,13 +604,11 @@
       pointer-events: none;
     }
 
-    /* Piano Timer Pill (Bottom-Center) */
+    /* Piano Timer Pill (Bottom-Left) */
     #piano-bar {
       position: fixed;
       bottom: 2vh;
-      left: 50%;
-      -webkit-transform: translateX(-50%);
-      transform: translateX(-50%);
+      left: 2vw;
       display: -webkit-box;
       display: -webkit-flex;
       display: flex;
@@ -650,44 +673,49 @@
 </head>
 <body class="theme-maria-rainbow mode-split show-greeting">
   <div class="stage" id="stage">
-    <!-- Pure SVG Analog Clock (Zero canvas overhead) -->
-    <div class="analog-pane" id="analog-pane">
-      <svg id="analog-svg" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
-        <circle class="dial-circle" cx="120" cy="120" r="114" />
-        <g id="dial-ticks"></g>
-        <g id="dial-nums"></g>
-        <g id="hand-hour-g" transform="rotate(0 120 120)">
-          <line class="hand-hour" x1="120" y1="132" x2="120" y2="62" />
-        </g>
-        <g id="hand-min-g" transform="rotate(0 120 120)">
-          <line class="hand-min" x1="120" y1="136" x2="120" y2="38" />
-        </g>
-        <g id="hand-sec-g" transform="rotate(0 120 120)">
-          <line class="hand-sec" x1="120" y1="142" x2="120" y2="34" />
-          <circle class="sec-tip" cx="120" cy="34" r="5.5" />
-        </g>
-        <circle class="center-cap" cx="120" cy="120" r="5" />
-      </svg>
+    <div id="greeting-bar">
+      <span id="greeting-text"></span>
+      <span id="word-time"></span>
     </div>
+    <div class="main-row">
+      <!-- Pure SVG Analog Clock (Zero canvas overhead) -->
+      <div class="analog-pane" id="analog-pane">
+        <svg id="analog-svg" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+          <circle class="dial-circle" cx="120" cy="120" r="114" />
+          <g id="dial-ticks"></g>
+          <g id="dial-nums"></g>
+          <g id="hand-hour-g" transform="rotate(0 120 120)">
+            <line class="hand-hour" x1="120" y1="132" x2="120" y2="62" />
+          </g>
+          <g id="hand-min-g" transform="rotate(0 120 120)">
+            <line class="hand-min" x1="120" y1="136" x2="120" y2="38" />
+          </g>
+          <g id="hand-sec-g" transform="rotate(0 120 120)">
+            <line class="hand-sec" x1="120" y1="142" x2="120" y2="34" />
+            <circle class="sec-tip" cx="120" cy="34" r="5.5" />
+          </g>
+          <circle class="center-cap" cx="120" cy="120" r="5" />
+        </svg>
+      </div>
 
-    <!-- High-Contrast Digital & Weather Pane -->
-    <div class="digital-pane">
-      <div id="greeting-bar">
-        <span id="greeting-text"></span>
-        <span id="word-time"></span>
-      </div>
-      <div class="time-row">
-        <span id="time">--:--</span>
-        <span id="ampm" class="muted"></span>
-      </div>
-      <div id="date" class="muted">---</div>
-      <div class="divider"></div>
-      <div class="weather">
-        <svg id="weather-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"></svg>
-        <span id="weather-temp">--&deg;</span>
-        <span id="weather-cond" class="muted">Loading...</span>
-        <span id="weather-hi-lo">H --&deg; &nbsp; L --&deg;</span>
-        <span id="weather-uv">UV --</span>
+      <!-- High-Contrast Digital & Weather Pane -->
+      <div class="digital-pane">
+        <div class="time-row">
+          <span id="time">--:--</span>
+          <span id="ampm" class="muted"></span>
+        </div>
+        <div id="date" class="muted">
+          <div id="date-day">---</div>
+          <div id="date-num">---</div>
+        </div>
+        <div class="divider"></div>
+        <div class="weather">
+          <svg id="weather-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"></svg>
+          <span id="weather-temp">--&deg;</span>
+          <span id="weather-cond" class="muted">Loading...</span>
+          <span id="weather-hi-lo">H --&deg; &nbsp; L --&deg;</span>
+          <span id="weather-uv">UV --</span>
+        </div>
       </div>
     </div>
   </div>
@@ -700,6 +728,6 @@
   </div>
   <button id="mode-btn" class="corner-btn" type="button" aria-label="Switch clock mode">&#9719;</button>
   <button id="theme-btn" class="corner-btn" type="button" aria-label="Switch theme">&#9680;</button>
-  <script src="app.js?v=8"></script>
+  <script src="app.js?v=9"></script>
 </body>
 </html>

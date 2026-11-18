@@ -68,6 +68,8 @@
   var timeEl = document.getElementById("time");
   var ampmEl = document.getElementById("ampm");
   var dateEl = document.getElementById("date");
+  var dateDayEl = document.getElementById("date-day");
+  var dateNumEl = document.getElementById("date-num");
   var tempEl = document.getElementById("weather-temp");
   var condEl = document.getElementById("weather-cond");
   var hiLoEl = document.getElementById("weather-hi-lo");
@@ -87,7 +89,10 @@
   var secHandG = document.getElementById("hand-sec-g");
 
   var DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-  var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  var MONTHS = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
   var HOUR_WORDS = [
     "twelve", "one", "two", "three", "four", "five",
     "six", "seven", "eight", "nine", "ten", "eleven", "twelve"
@@ -280,7 +285,12 @@
       ampmEl.textContent = suffix;
     }
 
-    dateEl.textContent = DAYS[now.getDay()] + ", " + now.getDate() + " " + MONTHS[now.getMonth()];
+    if (dateDayEl && dateNumEl) {
+      dateDayEl.textContent = DAYS[now.getDay()];
+      dateNumEl.textContent = now.getDate() + " " + MONTHS[now.getMonth()];
+    } else if (dateEl) {
+      dateEl.textContent = DAYS[now.getDay()] + ", " + now.getDate() + " " + MONTHS[now.getMonth()];
+    }
 
     if (activeMode === "split" || activeMode === "analog") {
       var secAngle = s * 6;
