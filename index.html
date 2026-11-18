@@ -578,6 +578,74 @@
       opacity: 0;
       pointer-events: none;
     }
+
+    /* Piano Timer Pill (Bottom-Center) */
+    #piano-bar {
+      position: fixed;
+      bottom: 2vh;
+      left: 50%;
+      -webkit-transform: translateX(-50%);
+      transform: translateX(-50%);
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+      background-color: var(--badge-bg);
+      border: 2px solid var(--divider-color);
+      border-radius: 999px;
+      overflow: hidden;
+      opacity: 0.65;
+    }
+    #piano-bar.running,
+    #piano-bar.paused,
+    #piano-bar.done {
+      opacity: 1;
+      border-color: var(--accent-color);
+    }
+    #piano-progress {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 0%;
+      background-color: var(--accent-color);
+      opacity: 0.22;
+      pointer-events: none;
+    }
+    #piano-btn,
+    #piano-cancel {
+      position: relative;
+      background: transparent;
+      border: none;
+      color: inherit;
+      font-family: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    #piano-btn {
+      font-size: 2.6vh;
+      padding: 0.8vh 2.2vw;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    #piano-bar.running #piano-btn,
+    #piano-bar.paused #piano-btn,
+    #piano-bar.done #piano-btn {
+      font-size: 3.4vh;
+      padding: 1vh 2.6vw;
+    }
+    #piano-cancel {
+      display: none;
+      font-size: 2.8vh;
+      padding: 1vh 1.8vw 1vh 0.4vw;
+      opacity: 0.7;
+    }
+    #piano-bar.running #piano-cancel,
+    #piano-bar.paused #piano-cancel {
+      display: inline-block;
+    }
   </style>
 </head>
 <body class="theme-maria-rainbow mode-split show-greeting">
@@ -625,8 +693,13 @@
   </div>
 
   <div id="toast"></div>
+  <div id="piano-bar" class="idle">
+    <div id="piano-progress"></div>
+    <button id="piano-btn" type="button">&#127929; 10m Piano</button>
+    <button id="piano-cancel" type="button" aria-label="Cancel timer">&#10005;</button>
+  </div>
   <button id="mode-btn" class="corner-btn" type="button" aria-label="Switch clock mode">&#9719;</button>
   <button id="theme-btn" class="corner-btn" type="button" aria-label="Switch theme">&#9680;</button>
-  <script src="app.js?v=7"></script>
+  <script src="app.js?v=8"></script>
 </body>
 </html>

@@ -15,6 +15,7 @@
     timezone: "Australia/Sydney",
     weatherRefreshMinutes: 20,
     configRefreshMinutes: 5,
+    pianoMinutes: 10,
     pixelShift: true
   };
 
@@ -507,6 +508,145 @@
     var xy = SHIFTS[shiftIndex];
     stageEl.style.transform = "translate(" + xy[0] + "px, " + xy[1] + "px)";
   }
+
+  /* ==========================================================================
+     PIANO TIMER (Zero CPU when idle; Web Audio chime on completion)
+     ========================================================================== */
+  var pianoBar = document.getElementById("piano-bar");
+  var pianoBtn = document.getElementById("piano-btn");
+  var pianoCancel = document.getElementById("piano-cancel");
+  var pianoProgress = document.getElementById("piano-progress");
+  var pianoState = "idle"; // idle | running | paused | done
+  var pianoTotalSec = 600;
+  var pianoRemainSec = 600;
+  var pianoInterval = null;
+  var pianoDoneTimer = null;
+  var audioCtx = null;
+
+  function unlockAudio() {
+    try {
+      var Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return;
+      if (!audioCtx) audioCtx = new Ctx();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+    } catch (e) {}
+  }
+
+  function playPianoChime() {
+    try {
+      unlockAudio();
+      if (!audioCtx) return;
+      var notes = [523.25, 659.25, 783.99, 1046.5]; // C5 E5 G5 C6
+      var now = audioCtx.currentTime;
+      var i;
+      for (i = 0; i < notes.length; i++) {
+        var osc = audioCtx.createOscillator();
+        var gain = audioCtx.createGain();
+        var t = now + i * 0.22;
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(notes[i], t);
+        gain.gain.setValueAtTime(0.001, t);
+        gain.gain.exponentialRampToValueAtTime(0.28, t + 0.03);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.65);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(t);
+        osc.stop(t + 0.7);
+      }
+    } catch (e) {}
+  }
+
+  function formatMMSS(sec) {
+    var m = Math.floor(sec / 60);
+    var s = sec % 60;
+    return pad2(m) + ":" + pad2(s);
+  }
+
+  function renderPianoTimer() {
+    if (!pianoBar || !pianoBtn) return;
+    var mins = typeof cfg.pianoMinutes === "number" && cfg.pianoMinutes > 0 ? cfg.pianoMinutes : 10;
+    pianoBar.className = pianoState;
+    if (pianoState === "idle") {
+      pianoBtn.textContent = "\uD83C\uDFB9 " + mins + "m Piano";
+      if (pianoProgress) pianoProgress.style.width = "0%";
+    } else if (pianoState === "running") {
+      pianoBtn.textContent = "\uD83C\uDFB9 " + formatMMSS(pianoRemainSec);
+      var pct = Math.max(0, Math.min(100, ((pianoTotalSec - pianoRemainSec) / pianoTotalSec) * 100));
+      if (pianoProgress) pianoProgress.style.width = pct.toFixed(1) + "%";
+    } else if (pianoState === "paused") {
+      pianoBtn.textContent = "\u23F8 " + formatMMSS(pianoRemainSec);
+    } else if (pianoState === "done") {
+      var child = cfg.childName || "Maria";
+      pianoBtn.textContent = "\uD83C\uDFB9 Great job, " + child + "!";
+      if (pianoProgress) pianoProgress.style.width = "100%";
+    }
+  }
+
+  function stopPianoInterval() {
+    if (pianoInterval) {
+      clearInterval(pianoInterval);
+      pianoInterval = null;
+    }
+    if (pianoDoneTimer) {
+      clearTimeout(pianoDoneTimer);
+      pianoDoneTimer = null;
+    }
+  }
+
+  function resetPianoTimer() {
+    stopPianoInterval();
+    pianoState = "idle";
+    renderPianoTimer();
+  }
+
+  function tickPianoTimer() {
+    if (pianoState !== "running") return;
+    pianoRemainSec -= 1;
+    if (pianoRemainSec <= 0) {
+      pianoRemainSec = 0;
+      stopPianoInterval();
+      pianoState = "done";
+      renderPianoTimer();
+      playPianoChime();
+      pianoDoneTimer = setTimeout(resetPianoTimer, 12000);
+      return;
+    }
+    renderPianoTimer();
+  }
+
+  if (pianoBtn) {
+    pianoBtn.onclick = function () {
+      unlockAudio();
+      if (pianoState === "idle") {
+        var mins = typeof cfg.pianoMinutes === "number" && cfg.pianoMinutes > 0 ? cfg.pianoMinutes : 10;
+        pianoTotalSec = Math.round(mins * 60);
+        pianoRemainSec = pianoTotalSec;
+        pianoState = "running";
+        stopPianoInterval();
+        pianoInterval = setInterval(tickPianoTimer, 1000);
+        renderPianoTimer();
+      } else if (pianoState === "running") {
+        pianoState = "paused";
+        stopPianoInterval();
+        renderPianoTimer();
+      } else if (pianoState === "paused") {
+        pianoState = "running";
+        stopPianoInterval();
+        pianoInterval = setInterval(tickPianoTimer, 1000);
+        renderPianoTimer();
+      } else if (pianoState === "done") {
+        resetPianoTimer();
+      }
+    };
+  }
+
+  if (pianoCancel) {
+    pianoCancel.onclick = function () {
+      resetPianoTimer();
+    };
+  }
+
+  renderPianoTimer();
 
   themeBtn.onclick = function () { cycleTheme(1); };
   modeBtn.onclick = function () { cycleMode(); };
