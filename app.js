@@ -421,6 +421,95 @@
     applyBodyClasses(now.getHours(), now.getMinutes());
   }
 
+  var weatherRetryTimer = null;
+
+  function wwoToWmo(wwo) {
+    var c = parseInt(wwo, 10);
+    if (c === 113) return 0;
+    if (c === 116) return 2;
+    if (c === 119 || c === 122) return 3;
+    if (c === 143 || c === 248 || c === 260) return 45;
+    if (c >= 263 && c <= 284) return 51;
+    if (c >= 293 && c <= 314) return 61;
+    if (c >= 353 && c <= 359) return 80;
+    if (c >= 386 && c <= 395) return 95;
+    return 3;
+  }
+
+  function applyWeatherData(w, skipSave) {
+    if (typeof w.temp === "number") {
+      tempEl.textContent = Math.round(w.temp) + "\u00B0";
+    }
+    if (w.cond) {
+      condEl.textContent = w.cond;
+    }
+    if (typeof w.wmo === "number") {
+      var h = new Date().getHours();
+      renderWeatherIcon(w.wmo, h < 6 || h >= 19);
+    }
+    if (typeof w.hi === "number" && typeof w.lo === "number") {
+      hiLoEl.textContent = "H " + Math.round(w.hi) + "\u00B0  L " + Math.round(w.lo) + "\u00B0";
+    }
+    updateUV({ uv_index: w.uv, is_day: w.isDay ? 1 : 0 });
+    if (!skipSave) {
+      w.ts = new Date().getTime();
+      try { window.localStorage.setItem("weather_cache_v1", JSON.stringify(w)); } catch (e) {}
+    }
+  }
+
+  function loadCachedWeather() {
+    try {
+      var raw = window.localStorage.getItem("weather_cache_v1");
+      if (!raw) return;
+      var w = JSON.parse(raw);
+      if (w && w.ts && (new Date().getTime() - w.ts) < 4 * 60 * 60 * 1000) {
+        applyWeatherData(w, true);
+      }
+    } catch (e) {}
+  }
+
+  function scheduleWeatherRetry() {
+    if (weatherRetryTimer) clearTimeout(weatherRetryTimer);
+    weatherRetryTimer = setTimeout(fetchWeather, 20000);
+  }
+
+  function fetchWeatherFallback() {
+    var url = "https://wttr.in/" + cfg.latitude + "," + cfg.longitude + "?format=j1";
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+    xhr.timeout = 12000;
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState !== 4) return;
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try {
+          var data = JSON.parse(xhr.responseText);
+          var cur = (data.current_condition && data.current_condition[0]) || {};
+          var day = (data.weather && data.weather[0]) || {};
+          var h = new Date().getHours();
+          var wmo = wwoToWmo(cur.weatherCode);
+          var desc = (cur.weatherDesc && cur.weatherDesc[0] && cur.weatherDesc[0].value) || wmoDescription(wmo);
+          applyWeatherData({
+            temp: parseFloat(cur.temp_C),
+            wmo: wmo,
+            cond: desc,
+            hi: parseFloat(day.maxtempC),
+            lo: parseFloat(day.mintempC),
+            uv: parseFloat(cur.uvIndex),
+            isDay: (h >= 6 && h < 19)
+          }, false);
+          return;
+        } catch (e) {}
+      }
+      if (tempEl.textContent === "--\u00B0") condEl.textContent = "Offline";
+      scheduleWeatherRetry();
+    };
+    xhr.onerror = xhr.ontimeout = function () {
+      if (tempEl.textContent === "--\u00B0") condEl.textContent = "Offline";
+      scheduleWeatherRetry();
+    };
+    xhr.send();
+  }
+
   function fetchWeather() {
     var url =
       "https://api.open-meteo.com/v1/forecast?latitude=" + cfg.latitude +
@@ -432,7 +521,7 @@
 
     var xhr = new XMLHttpRequest();
     xhr.open("GET", url, true);
-    xhr.timeout = 10000;
+    xhr.timeout = 12000;
     xhr.onreadystatechange = function () {
       if (xhr.readyState !== 4) return;
       if (xhr.status >= 200 && xhr.status < 300) {
@@ -440,31 +529,22 @@
           var data = JSON.parse(xhr.responseText);
           var cur = data.current || {};
           var daily = data.daily || {};
-          if (typeof cur.temperature_2m === "number") {
-            tempEl.textContent = Math.round(cur.temperature_2m) + "\u00B0";
-          }
-          if (typeof cur.weather_code === "number") {
-            condEl.textContent = wmoDescription(cur.weather_code);
-            var h = new Date().getHours();
-            renderWeatherIcon(cur.weather_code, h < 6 || h >= 19);
-          }
-          if (daily.temperature_2m_max && daily.temperature_2m_min) {
-            var hi = Math.round(daily.temperature_2m_max[0]);
-            var lo = Math.round(daily.temperature_2m_min[0]);
-            hiLoEl.textContent = "H " + hi + "\u00B0  L " + lo + "\u00B0";
-          }
-          updateUV(cur);
-        } catch (e) {
-          condEl.textContent = "Weather error";
-        }
-      } else if (tempEl.textContent === "--\u00B0") {
-        condEl.textContent = "Offline";
+          applyWeatherData({
+            temp: cur.temperature_2m,
+            wmo: cur.weather_code,
+            cond: typeof cur.weather_code === "number" ? wmoDescription(cur.weather_code) : "",
+            hi: daily.temperature_2m_max ? daily.temperature_2m_max[0] : null,
+            lo: daily.temperature_2m_min ? daily.temperature_2m_min[0] : null,
+            uv: cur.uv_index,
+            isDay: cur.is_day === 1
+          }, false);
+          return;
+        } catch (e) {}
       }
+      fetchWeatherFallback();
     };
-    xhr.onerror = function () {
-      if (tempEl.textContent === "--\u00B0") {
-        condEl.textContent = "Offline";
-      }
+    xhr.onerror = xhr.ontimeout = function () {
+      fetchWeatherFallback();
     };
     xhr.send();
   }
@@ -774,6 +854,7 @@
   }
 
   buildAnalogDial();
+  loadCachedWeather();
   updateClock();
   fetchWeather();
   fetchRemoteConfig();
