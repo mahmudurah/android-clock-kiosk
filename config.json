@@ -1,6 +1,7 @@
 {
-  "version": "13",
+  "version": "14",
   "showUV": true,
+  "arpansaLocation": "Sydney",
   "pianoMinutes": 10,
   "theme": "auto",
   "clockMode": "auto",

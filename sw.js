@@ -1,4 +1,4 @@
-var CACHE_NAME = "wall-clock-v13";
+var CACHE_NAME = "wall-clock-v14";
 var ASSETS = ["./", "./index.html", "./app.js"];
 
 self.addEventListener("install", function (event) {
@@ -28,7 +28,7 @@ self.addEventListener("activate", function (event) {
 
 self.addEventListener("fetch", function (event) {
   var url = event.request.url;
-  if (url.indexOf("config.json") !== -1 || url.indexOf("open-meteo.com") !== -1) {
+  if (url.indexOf("config.json") !== -1 || url.indexOf("open-meteo.com") !== -1 || url.indexOf("wttr.in") !== -1 || url.indexOf("arpansa.gov.au") !== -1 || url.indexOf("currentuvindex.com") !== -1) {
     return;
   }
   event.respondWith(

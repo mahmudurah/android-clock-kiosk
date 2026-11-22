@@ -388,7 +388,12 @@
     return m ? parseFloat(m[1]) : null;
   }
 
-  function updateUV(cur) {
+  var liveUvTimestamp = 0;
+
+  function updateUV(cur, fromLiveSource) {
+    if (!fromLiveSource && (new Date().getTime() - liveUvTimestamp) < 15 * 60 * 1000) {
+      return;
+    }
     if (!uvEl) {
       var weatherRow = document.querySelector(".weather");
       if (weatherRow) {
@@ -403,7 +408,7 @@
     var test = uvTestValue();
     var uv = test !== null ? test : cur.uv_index;
     var isDay = test !== null ? true : (cur.is_day === 1);
-    if (cfg.showUV === false || typeof uv !== "number" || !isDay) {
+    if (cfg.showUV === false || typeof uv !== "number" || isNaN(uv) || !isDay) {
       uvVisible = false;
     } else {
       var v = Math.round(uv);
@@ -419,6 +424,73 @@
     }
     var now = new Date();
     applyBodyClasses(now.getHours(), now.getMinutes());
+  }
+
+  function fetchCurrentUvIndexFallback() {
+    var url = "https://currentuvindex.com/api/v1/uvi?latitude=" + cfg.latitude + "&longitude=" + cfg.longitude;
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+    xhr.timeout = 8000;
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState !== 4) return;
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try {
+          var data = JSON.parse(xhr.responseText);
+          if (data && data.ok && data.now && typeof data.now.uvi === "number") {
+            var uvi = data.now.uvi;
+            if (data.forecast && data.forecast.length && typeof data.forecast[0].uvi === "number") {
+              var t0 = Date.parse(data.now.time);
+              var t1 = Date.parse(data.forecast[0].time);
+              var nowMs = new Date().getTime();
+              if (!isNaN(t0) && !isNaN(t1) && t1 > t0 && nowMs >= t0 && nowMs <= t1) {
+                uvi = uvi + (data.forecast[0].uvi - uvi) * ((nowMs - t0) / (t1 - t0));
+              }
+            }
+            var h = new Date().getHours();
+            liveUvTimestamp = new Date().getTime();
+            updateUV({ uv_index: uvi, is_day: (h >= 6 && h < 20 && uvi >= 0.3) ? 1 : 0 }, true);
+          }
+        } catch (e) {}
+      }
+    };
+    xhr.send();
+  }
+
+  function fetchLiveUV() {
+    if (cfg.showUV === false) return;
+    var loc = cfg.arpansaLocation || "Sydney";
+    var url = "https://uvdata.arpansa.gov.au/xml/uvvalues.xml?t=" + new Date().getTime();
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+    xhr.timeout = 8000;
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState !== 4) return;
+      if (xhr.status >= 200 && xhr.status < 300 && xhr.responseText) {
+        try {
+          var re = new RegExp('<location[^>]*id="' + loc + '"[^>]*>([\\s\\S]*?)<\\/location>', "i");
+          var match = re.exec(xhr.responseText);
+          if (match) {
+            var block = match[1];
+            var idxMatch = /<index>([^<]+)<\/index>/i.exec(block);
+            var statusMatch = /<status>([^<]+)<\/status>/i.exec(block);
+            if (idxMatch && (!statusMatch || statusMatch[1].toLowerCase() === "ok")) {
+              var val = parseFloat(idxMatch[1]);
+              if (!isNaN(val)) {
+                var h = new Date().getHours();
+                liveUvTimestamp = new Date().getTime();
+                updateUV({ uv_index: val, is_day: (h >= 6 && h < 20 && val >= 0.2) ? 1 : 0 }, true);
+                return;
+              }
+            }
+          }
+        } catch (e) {}
+      }
+      fetchCurrentUvIndexFallback();
+    };
+    xhr.onerror = xhr.ontimeout = function () {
+      fetchCurrentUvIndexFallback();
+    };
+    xhr.send();
   }
 
   var weatherRetryTimer = null;
@@ -875,9 +947,11 @@
   loadCachedWeather();
   updateClock();
   fetchWeather();
+  fetchLiveUV();
   fetchRemoteConfig();
 
   setInterval(fetchWeather, (cfg.weatherRefreshMinutes || 20) * 60 * 1000);
+  setInterval(fetchLiveUV, 5 * 60 * 1000);
   setInterval(fetchRemoteConfig, (cfg.configRefreshMinutes || 5) * 60 * 1000);
   setInterval(runPixelShift, 10 * 60 * 1000);
 })();
