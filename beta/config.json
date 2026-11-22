@@ -1,0 +1,21 @@
+{
+  "version": "beta-1",
+  "showUV": true,
+  "arpansaLocation": "Sydney",
+  "pianoMinutes": 10,
+  "theme": "auto",
+  "clockMode": "auto",
+  "childName": "Maria",
+  "dayTheme": "maria-rainbow",
+  "nightTheme": "maria-space",
+  "dayStartHour": 7,
+  "nightStartHour": 20,
+  "use24Hour": false,
+  "showSeconds": true,
+  "latitude": -33.7688,
+  "longitude": 150.9051,
+  "timezone": "Australia/Sydney",
+  "weatherRefreshMinutes": 20,
+  "configRefreshMinutes": 5,
+  "pixelShift": true
+}

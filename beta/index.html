@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Wall Clock</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* ==========================================================================
+       10 CURATED ULTRA-LIGHTWEIGHT THEMES (Zero blur/shadows for fast rendering)
+       ========================================================================== */
+
+    /* 1. Pure OLED Night */
+    body.theme-oled {
+      background-color: #000000;
+      color: #eef2f6;
+      --sub-color: #9ba5b4;
+      --accent-color: #58a6ff;
+      --divider-color: #1e242d;
+      --dial-bg: #0b0e13;
+      --dial-border: #252c37;
+      --hour-hand: #eef2f6;
+      --min-hand: #b8c2d1;
+      --sec-hand: #58a6ff;
+      --badge-bg: #11161f;
+    }
+
+    /* 2. Swiss Station (Mondaine SBB Inspired) */
+    body.theme-swiss {
+      background-color: #f4f4f0;
+      color: #111111;
+      --sub-color: #383838;
+      --accent-color: #e30613;
+      --divider-color: #cccccc;
+      --dial-bg: #ffffff;
+      --dial-border: #111111;
+      --hour-hand: #111111;
+      --min-hand: #111111;
+      --sec-hand: #e30613;
+      --badge-bg: #e6e6e0;
+    }
+
+    /* 3. Braun Dark (Dieter Rams Inspired) */
+    body.theme-braun {
+      background-color: #161719;
+      color: #f2efe9;
+      --sub-color: #b5b0a6;
+      --accent-color: #f5b800;
+      --divider-color: #2e3034;
+      --dial-bg: #1f2023;
+      --dial-border: #3a3c42;
+      --hour-hand: #f2efe9;
+      --min-hand: #d8d3c8;
+      --sec-hand: #f5b800;
+      --badge-bg: #25272b;
+    }
+
+    /* 4. Maria's Time Teacher (Color-coded Hour & Minute hands + Word Time) */
+    body.theme-maria-rainbow {
+      background-color: #fff8ee;
+      color: #1f2438;
+      --sub-color: #3f4766;
+      --accent-color: #ff477e;
+      --divider-color: #f0dec6;
+      --dial-bg: #ffffff;
+      --dial-border: #ff85a1;
+      --hour-hand: #ff477e;
+      --min-hand: #0096c7;
+      --sec-hand: #ffbe0b;
+      --badge-bg: #ffecf2;
+    }
+
+    /* 5. Maria's Starlight Galaxy (Cozy Kid Night/Space Theme) */
+    body.theme-maria-space {
+      background-color: #090b16;
+      color: #f3eeff;
+      --sub-color: #b8a9e8;
+      --accent-color: #ffd166;
+      --divider-color: #23274a;
+      --dial-bg: #12152b;
+      --dial-border: #3b4175;
+      --hour-hand: #ff70a6;
+      --min-hand: #70d6ff;
+      --sec-hand: #ffd166;
+      --badge-bg: #181c38;
+    }
+
+    /* 6. Retro Nixie Amber */
+    body.theme-amber {
+      background-color: #070400;
+      color: #ff9e22;
+      --sub-color: #d9750b;
+      --accent-color: #ffc145;
+      --divider-color: #2e1a04;
+      --dial-bg: #120a00;
+      --dial-border: #4a2a06;
+      --hour-hand: #ff9e22;
+      --min-hand: #ffb84d;
+      --sec-hand: #ffd97d;
+      --badge-bg: #1c1002;
+    }
+
+    /* 7. Terminal Phosphor Green */
+    body.theme-terminal {
+      background-color: #020804;
+      color: #39ff5a;
+      font-family: "Courier New", Courier, monospace;
+      --sub-color: #26c941;
+      --accent-color: #7aff8f;
+      --divider-color: #0e3616;
+      --dial-bg: #051409;
+      --dial-border: #195926;
+      --hour-hand: #39ff5a;
+      --min-hand: #26c941;
+      --sec-hand: #a3ffcf;
+      --badge-bg: #08210f;
+    }
+
+    /* 8. E-Ink Paper & Ink */
+    body.theme-eink {
+      background-color: #e6e4dc;
+      color: #121211;
+      font-family: Georgia, "Times New Roman", Times, serif;
+      --sub-color: #363633;
+      --accent-color: #121211;
+      --divider-color: #99978f;
+      --dial-bg: #efede6;
+      --dial-border: #121211;
+      --hour-hand: #121211;
+      --min-hand: #121211;
+      --sec-hand: #555550;
+      --badge-bg: #dad8cf;
+    }
+
+    /* 9. Nordic Frost */
+    body.theme-nord {
+      background-color: #242933;
+      color: #eceff4;
+      --sub-color: #9ecae1;
+      --accent-color: #88c0d0;
+      --divider-color: #3b4252;
+      --dial-bg: #2e3440;
+      --dial-border: #4c566a;
+      --hour-hand: #eceff4;
+      --min-hand: #88c0d0;
+      --sec-hand: #ebcb8b;
+      --badge-bg: #323946;
+    }
+
+    /* 10. Deep Bedroom Red (Zero Night Glare) */
+    body.theme-red-night {
+      background-color: #000000;
+      color: #cc2929;
+      --sub-color: #991f1f;
+      --accent-color: #e03e3e;
+      --divider-color: #2b0909;
+      --dial-bg: #0d0202;
+      --dial-border: #3d0c0c;
+      --hour-hand: #cc2929;
+      --min-hand: #a31f1f;
+      --sec-hand: #ff4d4d;
+      --badge-bg: #170404;
+    }
+
+    .muted { color: var(--sub-color); }
+    .accent { color: var(--accent-color); }
+
+    /* ==========================================================================
+       MAIN STAGE & MODES (Digital / Split / Analog)
+       ========================================================================== */
+    .stage {
+      width: 100%;
+      height: 100%;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
+      -webkit-flex-direction: column;
+      flex-direction: column;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+      justify-content: center;
+      padding: 2.5vh 4vw 7vh 4vw;
+      text-align: center;
+    }
+
+    .main-row {
+      width: 100%;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+      justify-content: center;
+    }
+
+    .analog-pane {
+      display: none;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+      justify-content: center;
+    }
+
+    .digital-pane {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
+      -webkit-flex-direction: column;
+      flex-direction: column;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+      justify-content: center;
+      width: 100%;
+    }
+
+    /* Greeting / Word-clock banner */
+    #greeting-bar {
+      display: none;
+      background-color: var(--badge-bg);
+      padding: 1vh 2.8vw;
+      border-radius: 999px;
+      font-size: 3.6vw;
+      font-weight: 700;
+      margin-bottom: 2vh;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    body.show-greeting #greeting-bar {
+      display: inline-block;
+    }
+
+    body.show-greeting.mode-split #greeting-bar,
+    body.show-greeting.mode-analog #greeting-bar {
+      -webkit-align-self: flex-start;
+      align-self: flex-start;
+      font-size: 3.3vw;
+      padding: 0.9vh 2.4vw;
+      margin-bottom: 2.2vh;
+    }
+
+    #word-time {
+      color: var(--accent-color);
+      margin-left: 1.2vw;
+    }
+
+    /* Digital Time */
+    .time-row {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-align: baseline;
+      -webkit-align-items: baseline;
+      align-items: baseline;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+      justify-content: center;
+      line-height: 0.9;
+    }
+
+    #time {
+      font-size: 24vw;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    #ampm {
+      font-size: 7vw;
+      font-weight: 700;
+      margin-left: 1.5vw;
+      text-transform: uppercase;
+    }
+
+    /* Large 2-line Date */
+    #date {
+      margin-top: 1.4vh;
+      font-size: 7.4vw;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      line-height: 1.12;
+      white-space: nowrap;
+    }
+    #date-day, #date-num {
+      white-space: nowrap;
+    }
+
+    .divider {
+      width: 68vw;
+      height: 3px;
+      background-color: var(--divider-color);
+      margin: 2.4vh 0;
+      border-radius: 2px;
+    }
+
+    /* Large Weather Row */
+    .weather {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+      justify-content: center;
+      -webkit-flex-wrap: nowrap;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+      gap: 2.2vw;
+    }
+
+    #weather-icon {
+      width: 7.5vw;
+      height: 7.5vw;
+      display: inline-block;
+      vertical-align: middle;
+      -webkit-flex-shrink: 0;
+      flex-shrink: 0;
+    }
+
+    #weather-temp {
+      font-size: 9vw;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+
+    #weather-cond {
+      font-size: 6vw;
+      font-weight: 600;
+    }
+
+    #weather-hi-lo {
+      font-size: 6vw;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      background-color: var(--badge-bg);
+      padding: 0.6vh 1.8vw;
+      border-radius: 16px;
+    }
+
+    /* UV Index pill (daytime only, WHO colour scale) */
+    #weather-uv {
+      display: none;
+      font-size: 6vw;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      padding: 0.6vh 1.8vw;
+      border-radius: 16px;
+      color: #111111;
+      background-color: #3ea72d;
+    }
+    body.has-uv #weather-uv { display: inline-block; }
+    #weather-uv.uv-low { background-color: #3ea72d; color: #ffffff; }
+    #weather-uv.uv-moderate { background-color: #ffd60a; color: #111111; }
+    #weather-uv.uv-high { background-color: #f18b00; color: #111111; }
+    #weather-uv.uv-veryhigh { background-color: #e53210; color: #ffffff; }
+    #weather-uv.uv-extreme { background-color: #9b4dca; color: #ffffff; }
+
+    /* Make room for the UV pill in digital mode */
+    body.mode-digital.has-uv #weather-icon { width: 6.4vw; height: 6.4vw; }
+    body.mode-digital.has-uv #weather-temp { font-size: 8vw; }
+    body.mode-digital.has-uv #weather-cond,
+    body.mode-digital.has-uv #weather-hi-lo,
+    body.mode-digital.has-uv #weather-uv { font-size: 5vw; padding-left: 1.4vw; padding-right: 1.4vw; }
+    body.mode-digital.has-uv #weather-cond { padding: 0; }
+    body.mode-digital.has-uv .weather { gap: 1.6vw; }
+
+    /* ==========================================================================
+       CLASSIC THEMES (Original v1 look, digital clock only)
+       ========================================================================== */
+    body.theme-classic-dark {
+      background-color: #050608;
+      color: #c8cfd8;
+      --sub-color: #6b7685;
+      --accent-color: #c8cfd8;
+      --divider-color: #1b2028;
+      --badge-bg: transparent;
+    }
+    body.theme-classic-light {
+      background-color: #f4f5f7;
+      color: #111418;
+      --sub-color: #525c68;
+      --accent-color: #111418;
+      --divider-color: #d8dde3;
+      --badge-bg: transparent;
+    }
+    body.theme-classic-dark #time,
+    body.theme-classic-light #time { font-size: 25vw; font-weight: 700; letter-spacing: -0.03em; }
+    body.theme-classic-dark #ampm,
+    body.theme-classic-light #ampm { font-size: 5.5vw; font-weight: 600; }
+    body.theme-classic-dark #date,
+    body.theme-classic-light #date { font-size: 6.5vw; font-weight: 500; margin-top: 2.5vh; }
+    body.theme-classic-dark .divider,
+    body.theme-classic-light .divider { width: 45vw; height: 2px; margin: 4vh 0; }
+    body.theme-classic-dark #weather-icon,
+    body.theme-classic-light #weather-icon { display: none; }
+    body.theme-classic-dark .weather,
+    body.theme-classic-light .weather { gap: 3vw; }
+    body.theme-classic-dark #weather-temp,
+    body.theme-classic-light #weather-temp { font-size: 6.5vw; font-weight: 700; }
+    body.theme-classic-dark #weather-cond,
+    body.theme-classic-light #weather-cond,
+    body.theme-classic-dark #weather-hi-lo,
+    body.theme-classic-light #weather-hi-lo { font-size: 4.8vw; font-weight: 500; padding: 0; color: var(--sub-color); }
+    body.theme-classic-dark #weather-uv,
+    body.theme-classic-light #weather-uv { font-size: 4.2vw; font-weight: 700; padding: 0.3vh 1.2vw; border-radius: 10px; }
+
+    /* ==========================================================================
+       SPLIT MODE (Analog + Digital Side by Side)
+       ========================================================================== */
+    body.mode-split .analog-pane {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      width: 44%;
+      padding-right: 2vw;
+    }
+
+    body.mode-split .digital-pane {
+      width: 56%;
+    }
+
+    body.mode-split #analog-svg {
+      width: 42vw;
+      height: 42vw;
+      max-width: 76vh;
+      max-height: 76vh;
+    }
+
+    body.mode-split #time { font-size: 14.2vw; }
+    body.mode-split #ampm { font-size: 4.4vw; }
+    body.mode-split #date { font-size: 5.2vw; margin-top: 1.2vh; }
+    body.mode-split .divider { width: 46vw; margin: 1.6vh 0; }
+    body.mode-split .weather { -webkit-flex-wrap: wrap; flex-wrap: wrap; row-gap: 1vh; gap: 1.6vw; }
+    body.mode-split #weather-icon { width: 4.8vw; height: 4.8vw; }
+    body.mode-split #weather-temp { font-size: 6.2vw; }
+    body.mode-split #weather-cond { font-size: 4.2vw; }
+    body.mode-split #weather-hi-lo { font-size: 4.2vw; padding: 0.4vh 1.4vw; }
+
+    /* ==========================================================================
+       ANALOG-FIRST MODE (Giant Analog Dial + Bold Info Column)
+       ========================================================================== */
+    body.mode-analog .analog-pane {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      width: 52%;
+      padding-right: 2vw;
+    }
+
+    body.mode-analog .digital-pane {
+      width: 48%;
+    }
+
+    body.mode-analog #analog-svg {
+      width: 48vw;
+      height: 48vw;
+      max-width: 78vh;
+      max-height: 78vh;
+    }
+
+    body.mode-analog #time { font-size: 9.5vw; }
+    body.mode-analog #ampm { font-size: 3.5vw; }
+    body.mode-analog #date { font-size: 6.2vw; margin-top: 1.5vh; }
+    body.mode-analog .divider { width: 40vw; margin: 1.8vh 0; }
+    body.mode-analog .weather { -webkit-flex-wrap: wrap; flex-wrap: wrap; row-gap: 1vh; gap: 1.6vw; }
+    body.mode-analog #weather-icon { width: 5.2vw; height: 5.2vw; }
+    body.mode-analog #weather-temp { font-size: 6.8vw; }
+    body.mode-analog #weather-cond { font-size: 4.4vw; }
+    body.mode-analog #weather-hi-lo { font-size: 4.4vw; padding: 0.4vh 1.4vw; }
+
+    /* ==========================================================================
+       PURE ANALOG MODE (Just the Analog Clock, Nothing Else)
+       ========================================================================== */
+    body.mode-analog-only .stage {
+      padding: 2vh 2vw;
+    }
+    body.mode-analog-only #greeting-bar,
+    body.mode-analog-only .digital-pane,
+    body.mode-analog-only #piano-bar {
+      display: none !important;
+    }
+    body.mode-analog-only .analog-pane {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      width: 100%;
+      padding-right: 0;
+    }
+    body.mode-analog-only #analog-svg {
+      width: 88vh;
+      height: 88vh;
+      max-width: 88vw;
+      max-height: 88vw;
+    }
+
+    /* SVG Analog Clock Styling */
+    .dial-circle {
+      fill: var(--dial-bg);
+      stroke: var(--dial-border);
+      stroke-width: 4;
+    }
+    .tick-major { stroke: currentColor; stroke-width: 3.5; stroke-linecap: round; }
+    .tick-minor { stroke: var(--sub-color); stroke-width: 1.5; stroke-linecap: round; opacity: 0.6; }
+    .dial-num {
+      fill: currentColor;
+      font-size: 22px;
+      font-weight: 800;
+      text-anchor: middle;
+      dominant-baseline: central;
+    }
+    body.theme-maria-rainbow .dial-num { fill: var(--hour-hand); }
+    .dial-min-num {
+      display: none;
+      fill: var(--min-hand);
+      font-size: 10px;
+      font-weight: 700;
+      text-anchor: middle;
+      dominant-baseline: central;
+    }
+    body.theme-maria-rainbow .dial-min-num,
+    body.theme-maria-space .dial-min-num {
+      display: block;
+    }
+    .hand-hour { stroke: var(--hour-hand); stroke-width: 8; stroke-linecap: round; }
+    .hand-min { stroke: var(--min-hand); stroke-width: 5.5; stroke-linecap: round; }
+    .hand-sec { stroke: var(--sec-hand); stroke-width: 2.5; stroke-linecap: round; }
+    .sec-tip { fill: var(--sec-hand); }
+    .center-cap { fill: var(--sec-hand); stroke: var(--dial-bg); stroke-width: 2; }
+
+    /* Portrait layout adjustments */
+    @media (orientation: portrait) {
+      .stage {
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -webkit-flex-direction: column;
+        flex-direction: column;
+      }
+      #greeting-bar { font-size: 4.5vw; }
+      #time { font-size: 25vw; }
+      #ampm { font-size: 7vw; }
+      #date { font-size: 8.8vw; }
+      .divider { width: 82vw; }
+      #weather-icon { width: 9vw; height: 9vw; }
+      #weather-temp { font-size: 11vw; }
+      #weather-cond { font-size: 7.5vw; }
+      #weather-hi-lo { font-size: 7.5vw; }
+
+      body.mode-split .analog-pane,
+      body.mode-analog .analog-pane {
+        width: 100%;
+        padding-right: 0;
+        margin-bottom: 2.5vh;
+      }
+      body.mode-split .digital-pane,
+      body.mode-analog .digital-pane {
+        width: 100%;
+      }
+      body.mode-split #analog-svg { width: 54vw; height: 54vw; }
+      body.mode-analog #analog-svg { width: 68vw; height: 68vw; }
+      body.mode-split #time { font-size: 20vw; }
+      body.mode-split #date { font-size: 7.2vw; }
+      body.mode-split #weather-temp { font-size: 9vw; }
+      body.mode-split #weather-cond,
+      body.mode-split #weather-hi-lo { font-size: 6.2vw; }
+    }
+
+    /* Corner Controls & Toast */
+    .corner-btn {
+      position: fixed;
+      bottom: 2vh;
+      background: transparent;
+      border: none;
+      color: inherit;
+      opacity: 0.28;
+      font-size: 3.2vh;
+      padding: 1vh 1.5vw;
+      cursor: pointer;
+    }
+    #mode-btn { right: 12vw; }
+    #theme-btn { right: 7vw; }
+    #picker-btn { right: 2vw; font-size: 3.4vh; }
+
+    /* Quick Picker Overlay (Hidden when closed for zero overhead) */
+    #picker-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.72);
+      z-index: 100;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+      justify-content: center;
+      padding: 3vh 4vw;
+    }
+    #picker-overlay.open {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+    }
+    #picker-card {
+      width: 100%;
+      max-width: 960px;
+      max-height: 90vh;
+      overflow-y: auto;
+      background-color: #16181d;
+      color: #f2f4f8;
+      border: 2px solid #2e3440;
+      border-radius: 22px;
+      padding: 3vh 3vw;
+      text-align: left;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .picker-head {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+      -webkit-box-pack: justify;
+      -webkit-justify-content: space-between;
+      justify-content: space-between;
+      margin-bottom: 2.2vh;
+    }
+    .picker-title {
+      font-size: 3.4vh;
+      font-weight: 800;
+    }
+    #picker-close {
+      background-color: #2c323d;
+      color: #ffffff;
+      border: none;
+      border-radius: 999px;
+      padding: 1vh 2.8vw;
+      font-size: 2.5vh;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .picker-label {
+      font-size: 2.1vh;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #9aa4b2;
+      margin: 2vh 0 1.2vh 0;
+    }
+    .picker-grid {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-flex-wrap: wrap;
+      flex-wrap: wrap;
+      gap: 1.2vh 1.2vw;
+    }
+    .pick-btn {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+      gap: 1vw;
+      background-color: #21252d;
+      color: #e6ebf2;
+      border: 2px solid #303642;
+      border-radius: 14px;
+      padding: 1.3vh 1.8vw;
+      font-size: 2.4vh;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .pick-btn.active {
+      border-color: #58a6ff;
+      background-color: #1c2d42;
+      color: #ffffff;
+    }
+    .swatch {
+      width: 2.8vh;
+      height: 2.8vh;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      display: inline-block;
+      -webkit-flex-shrink: 0;
+      flex-shrink: 0;
+    }
+    .picker-name-row {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+      gap: 1.2vw;
+    }
+    #picker-name-input {
+      -webkit-box-flex: 1;
+      -webkit-flex: 1;
+      flex: 1;
+      max-width: 420px;
+      background-color: #21252d;
+      color: #ffffff;
+      border: 2px solid #303642;
+      border-radius: 12px;
+      padding: 1.1vh 1.6vw;
+      font-size: 2.4vh;
+      font-weight: 600;
+      font-family: inherit;
+      outline: none;
+    }
+    #picker-name-input:focus {
+      border-color: #58a6ff;
+    }
+    #picker-name-save {
+      background-color: #1f6feb;
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      padding: 1.2vh 2.2vw;
+      font-size: 2.3vh;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    #picker-name-clear {
+      background-color: #2c323d;
+      color: #d0d7de;
+      border: none;
+      border-radius: 12px;
+      padding: 1.2vh 1.8vw;
+      font-size: 2.3vh;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 3vh;
+      left: 50%;
+      -webkit-transform: translateX(-50%);
+      transform: translateX(-50%);
+      background-color: var(--badge-bg);
+      border: 2px solid var(--divider-color);
+      color: inherit;
+      padding: 1vh 3vw;
+      border-radius: 999px;
+      font-size: 2.8vh;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Piano Timer Pill (Bottom-Left) */
+    #piano-bar {
+      position: fixed;
+      bottom: 2vh;
+      left: 2vw;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+      background-color: var(--badge-bg);
+      border: 2px solid var(--divider-color);
+      border-radius: 999px;
+      overflow: hidden;
+      opacity: 0.65;
+    }
+    #piano-bar.running,
+    #piano-bar.paused,
+    #piano-bar.done {
+      opacity: 1;
+      border-color: var(--accent-color);
+    }
+    #piano-progress {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 0%;
+      background-color: var(--accent-color);
+      opacity: 0.22;
+      pointer-events: none;
+    }
+    #piano-btn,
+    #piano-cancel {
+      position: relative;
+      background: transparent;
+      border: none;
+      color: inherit;
+      font-family: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    #piano-btn {
+      font-size: 2.6vh;
+      padding: 0.8vh 2.2vw;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    #piano-bar.running #piano-btn,
+    #piano-bar.paused #piano-btn,
+    #piano-bar.done #piano-btn {
+      font-size: 3.4vh;
+      padding: 1vh 2.6vw;
+    }
+    #piano-cancel {
+      display: none;
+      font-size: 2.8vh;
+      padding: 1vh 1.8vw 1vh 0.4vw;
+      opacity: 0.7;
+    }
+    #piano-bar.running #piano-cancel,
+    #piano-bar.paused #piano-cancel {
+      display: inline-block;
+    }
+  </style>
+</head>
+<body class="theme-maria-rainbow mode-split show-greeting">
+  <div class="stage" id="stage">
+    <div id="greeting-bar">
+      <span id="greeting-text"></span>
+      <span id="word-time"></span>
+    </div>
+    <div class="main-row">
+      <!-- Pure SVG Analog Clock (Zero canvas overhead) -->
+      <div class="analog-pane" id="analog-pane">
+        <svg id="analog-svg" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+          <circle class="dial-circle" cx="120" cy="120" r="114" />
+          <g id="dial-ticks"></g>
+          <g id="dial-nums"></g>
+          <g id="hand-hour-g" transform="rotate(0 120 120)">
+            <line class="hand-hour" x1="120" y1="132" x2="120" y2="62" />
+          </g>
+          <g id="hand-min-g" transform="rotate(0 120 120)">
+            <line class="hand-min" x1="120" y1="136" x2="120" y2="38" />
+          </g>
+          <g id="hand-sec-g" transform="rotate(0 120 120)">
+            <line class="hand-sec" x1="120" y1="142" x2="120" y2="34" />
+            <circle class="sec-tip" cx="120" cy="34" r="5.5" />
+          </g>
+          <circle class="center-cap" cx="120" cy="120" r="5" />
+        </svg>
+      </div>
+
+      <!-- High-Contrast Digital & Weather Pane -->
+      <div class="digital-pane">
+        <div class="time-row">
+          <span id="time">--:--</span>
+          <span id="ampm" class="muted"></span>
+        </div>
+        <div id="date" class="muted">
+          <div id="date-day">---</div>
+          <div id="date-num">---</div>
+        </div>
+        <div class="divider"></div>
+        <div class="weather">
+          <svg id="weather-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"></svg>
+          <span id="weather-temp">--&deg;</span>
+          <span id="weather-cond" class="muted">Loading...</span>
+          <span id="weather-hi-lo">H --&deg; &nbsp; L --&deg;</span>
+          <span id="weather-uv">UV --</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+  <div id="piano-bar" class="idle">
+    <div id="piano-progress"></div>
+    <button id="piano-btn" type="button">&#127929; 10m Piano</button>
+    <button id="piano-cancel" type="button" aria-label="Cancel timer">&#10005;</button>
+  </div>
+  <button id="mode-btn" class="corner-btn" type="button" aria-label="Switch clock mode">&#9719;</button>
+  <button id="theme-btn" class="corner-btn" type="button" aria-label="Switch theme">&#9680;</button>
+  <button id="picker-btn" class="corner-btn" type="button" aria-label="Open clock picker">&#9776;</button>
+
+  <div id="picker-overlay" role="dialog" aria-label="Customize Clock">
+    <div id="picker-card">
+      <div class="picker-head">
+        <span class="picker-title">Choose Clock &amp; Theme (Beta)</span>
+        <button id="picker-close" type="button">Done</button>
+      </div>
+      <div class="picker-label">Display Name</div>
+      <div class="picker-name-row">
+        <input id="picker-name-input" type="text" maxlength="24" placeholder="Enter name (or leave blank)" />
+        <button id="picker-name-save" type="button">Save</button>
+        <button id="picker-name-clear" type="button">Clear</button>
+      </div>
+      <div class="picker-label">Clock Layout</div>
+      <div class="picker-grid" id="picker-modes"></div>
+      <div class="picker-label">Theme</div>
+      <div class="picker-grid" id="picker-themes"></div>
+    </div>
+  </div>
+
+  <script src="app.js?v=beta1"></script>
+</body>
+</html>
